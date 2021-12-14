@@ -48,11 +48,11 @@ const App = () => (
           BETA
         </Badge>
       </Flex>
-      <Text color="gray.500">
+      <Text color="black">
         Crypto-currency Artificial Intelligence Stock Trader
       </Text>
     </Flex>
-    <Grid p={10} gap={6} templateColumns="repeat(auto-fit, minmax(350px, 1fr))">
+    <Grid p={10} gap={6} templateColumns="repeat(auto-fit, minmax(350px, 1fr))" backgroundColor={"gray"}>
       <Stack>
         <Box
           backgroundColor="white"
@@ -86,6 +86,23 @@ const App = () => (
         </Box>
       </Stack>
     </Grid>
+
+    <Flex
+    backgroundColor={"limegreen"}
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      justifyContent="center"
+      textAlign="center"
+      mt={4}
+    >
+  <Flex>
+    <Text>
+      Here is a footer!
+    </Text>
+  </Flex>
+</Flex>
+
   </ChakraProvider>
 )
 
