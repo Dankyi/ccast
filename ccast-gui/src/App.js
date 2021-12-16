@@ -1,28 +1,5 @@
 import React from 'react'
-import {
-  ChakraProvider,
-  Stack,
-  Avatar,
-  AvatarBadge,
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  AlertDescription,
-  FormLabel,
-  Input,
-  FormHelperText,
-  FormErrorMessage,
-  Grid,
-  Switch,
-  InputGroup,
-  InputRightElement,
-  Icon,
-  Flex,
-  Text,
-  Badge,
-  Box,
-  Image
-} from '@chakra-ui/react'
+import {ChakraProvider, Stack, Avatar, AvatarBadge, Alert, AlertIcon, AlertTitle, AlertDescription, FormLabel, Input, FormHelperText, FormErrorMessage, Grid, Switch, InputGroup, InputRightElement, Icon, Flex, Text, Badge, Box, Image} from '@chakra-ui/react'
 
 const App = () => (
   <ChakraProvider resetCSS>
