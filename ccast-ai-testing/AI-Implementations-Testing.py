@@ -10,6 +10,7 @@ Implement as many different AIs and/or machine learning algorithms as you want a
 """
 
 from sklearn.svm import SVR, NuSVR
+from sklearn import tree
 import matplotlib.pyplot as plt
 import numpy as np
 from random import randint
@@ -57,6 +58,19 @@ def predict_price_nusvr(price_history):
     nu_support_vector_regression.fit(data_points, price_history)
 
     predicted_price = nu_support_vector_regression.predict([[len(data_points) + 1]])
+
+    return predicted_price[0]
+
+
+def predict_price_decisiontree(price_history):
+
+    data_points = [[i] for i in range(len(price_history))]
+
+    decision_tree_regressor = tree.DecisionTreeRegressor(splitter="best")
+
+    decision_tree_regressor.fit(data_points, price_history)
+
+    predicted_price = decision_tree_regressor.predict([[len(data_points) + 1]])
 
     return predicted_price[0]
 
@@ -144,7 +158,8 @@ def main():
     # # Uncomment the one AI being tested and comment out all the rest # #
 
     # predicted_price = predict_price_svr(price_history)
-    predicted_price = predict_price_nusvr(price_history)
+    # predicted_price = predict_price_nusvr(price_history)
+    predicted_price = predict_price_decisiontree(price_history)
 
     # # # Calls to AI/ML functions go above here # # #
 
