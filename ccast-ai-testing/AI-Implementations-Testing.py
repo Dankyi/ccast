@@ -31,11 +31,31 @@ def plot_graph():
 
 
 def load_price_file():
-    pass
+
+    """
+
+    Opens the price.txt file and builds the price history list
+
+    :return: a list of prices
+    """
+
+    price_history = []
+
+    with open("price.txt", "r") as txt_file:
+        lines = txt_file.readlines()
+        for line in lines:
+            price_history.append(float(line))
+
+    return price_history
 
 
 def main():
-    pass
+
+    price_history = load_price_file()
+    plot_data = []
+
+    data_points = 32  # Of the price history, how many points of data to use (e.g., 32 out of the 720).
+                      # This is used for the AI to train/predict
 
 
 if __name__ == "__main__":
