@@ -56,3 +56,25 @@ async def get_price_history(exchange, coin_index, time_period):
         # With Kraken, index [3] is the closing price.
 
     return price_history
+
+
+def save_text_file(price_history):
+
+    """
+
+    Saves the price history list to a text file, each line is one price.
+
+    :param price_history: The price history list to write
+    :return: void
+    """
+
+    price_history_length = len(price_history)
+
+    with open("price.txt", "w+") as txt_file:
+
+        for i in range(price_history_length):
+
+            txt_file.write(str(price_history[i]))
+
+            if i < price_history_length - 1:
+                txt_file.write("\n")
