@@ -107,7 +107,7 @@ async def main():
     if coin in exchange.symbols:
         coin_index = exchange.symbols.index(coin)
 
-    if coin_index > 1:
+    if coin_index > -1:
 
         print("Gotten Coin Index!")
 
