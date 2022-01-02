@@ -13,7 +13,7 @@ from sklearn.svm import SVR, NuSVR
 import matplotlib.pyplot as plt
 import numpy as np
 from random import randint
-
+from time import perf_counter_ns as stopwatch
 
 def predict_price_svr(price_history):
 
@@ -137,6 +137,8 @@ def main():
 
     price_history = price_history[:-1]  # Price history can now be just data_points long
 
+    s_time = stopwatch()
+
     # # # Calls to AI/ML functions go below here # # #
     # # Uncomment the one AI being tested and comment out all the rest # #
 
@@ -144,6 +146,11 @@ def main():
     predicted_price = predict_price_nusvr(price_history)
 
     # # # Calls to AI/ML functions go above here # # #
+
+    e_time = stopwatch() - s_time
+    e_time /= 1_000_000  # Nanoseconds to Milliseconds
+
+    print("Time Taken: " + str(e_time) + "ms")
 
     plot_data.append([predicted_price])
     plot_graph(plot_data)
