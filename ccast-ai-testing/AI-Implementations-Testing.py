@@ -11,6 +11,7 @@ Implement as many different AIs and/or machine learning algorithms as you want a
 
 from sklearn.svm import SVR, NuSVR
 from sklearn import tree
+from sklearn.neural_network import MLPRegressor
 import matplotlib.pyplot as plt
 import numpy as np
 from random import randint
@@ -71,6 +72,20 @@ def predict_price_decisiontree(price_history):
     decision_tree_regressor.fit(data_points, price_history)
 
     predicted_price = decision_tree_regressor.predict([[len(data_points) + 1]])
+
+    return predicted_price[0]
+
+
+def predict_price_neuralnetwork_multi_layer_perceptron(price_history):
+
+    data_points = [[i] for i in range(len(price_history))]
+
+    # You can play around with this like crazy, I think it has a lot of potential
+    ml_perceptron = MLPRegressor(solver="lbfgs", hidden_layer_sizes=(8, 2), activation="relu")
+
+    ml_perceptron.fit(data_points, price_history)
+
+    predicted_price = ml_perceptron.predict([[len(data_points) + 1]])
 
     return predicted_price[0]
 
@@ -159,7 +174,8 @@ def main():
 
     # predicted_price = predict_price_svr(price_history)
     # predicted_price = predict_price_nusvr(price_history)
-    predicted_price = predict_price_decisiontree(price_history)
+    # predicted_price = predict_price_decisiontree(price_history)
+    predicted_price = predict_price_neuralnetwork_multi_layer_perceptron(price_history)
 
     # # # Calls to AI/ML functions go above here # # #
 
