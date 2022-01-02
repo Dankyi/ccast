@@ -30,6 +30,10 @@ def plot_graph():
     pass
 
 
+def load_price_file():
+    pass
+
+
 def main():
     pass
 
