@@ -33,3 +33,26 @@ async def get_exchange():
     await exchange.load_markets(True)
 
     return exchange
+
+
+async def get_price_history(exchange, coin_index, time_period):
+
+    """
+
+    Connecting to the exchange and getting 720 time periods (minutes, days, etc) of data, and returning these as a list.
+
+    :param exchange: The cryptocurrency exchange object
+    :param coin_index: The integer index of the coin
+    :param time_period: The exchange grabs 720 points of this time period, e.g., "1m" is 720 minutes, "1d" is 720 days.
+    :return: a list of closing prices for the coin inputted, each index is 1 unit of time_period
+    """
+
+    candle_stick_data = await exchange.fetch_ohlcv(exchange.symbols[coin_index], time_period)
+
+    price_history = []
+
+    for candle_stick in candle_stick_data:
+        price_history.append(candle_stick[3])
+        # With Kraken, index [3] is the closing price.
+
+    return price_history
