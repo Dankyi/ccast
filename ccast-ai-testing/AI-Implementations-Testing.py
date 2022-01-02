@@ -151,7 +151,7 @@ def main():
     e_time = stopwatch() - s_time
     e_time /= 1_000_000  # Nanoseconds to Milliseconds
 
-    print("Time Taken: " + str(e_time) + "ms")
+    print("AI Training & Prediction Time Taken: " + str(e_time) + "ms")
 
     plot_data.append([predicted_price])
     plot_graph(plot_data)
