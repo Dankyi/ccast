@@ -65,6 +65,14 @@ def predict_price_nusvr(price_history):
 
 def plot_graph(plot_data):
 
+    """
+
+    Plot price history, next price and predicted price onto a matplotlib graph for visualisation
+
+    :param plot_data: a list of lists containing price history, next price and predicted price
+    :return: void
+    """
+
     plt.style.use("seaborn-whitegrid")
 
     print("Price History: " + str(plot_data[0]))  # Index 0 is the original price history used for training
@@ -103,6 +111,13 @@ def load_price_file():
 
 
 def main():
+
+    """
+
+    The main method, call AI and play with some values here
+
+    :return: void
+    """
 
     price_history = load_price_file()
     plot_data = []
