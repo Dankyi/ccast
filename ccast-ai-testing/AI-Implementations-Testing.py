@@ -57,6 +57,18 @@ def main():
     data_points = 32  # Of the price history, how many points of data to use (e.g., 32 out of the 720).
                       # This is used for the AI to train/predict
 
+    # Random starting point in the price history list
+    rnd_start_index = randint(0, len(price_history) - data_points)
+
+    # Choosing a random range of price_history that is data_points + 1 long
+    # The +1 is so the real next price can be compared to the predicted next price later on
+    price_history = price_history[rnd_start_index:rnd_start_index + data_points + 1]
+
+    plot_data.append(price_history[:-1])  # Leave out the very last index for plotting ..
+    plot_data.append([price_history[-1]])  # .. As it is plotted independently here
+
+    # # # Calls to AI/ML functions go below here # # #
+
 
 if __name__ == "__main__":
     main()
