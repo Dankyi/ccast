@@ -46,8 +46,24 @@ def predict_price_nusvr():
 # # # AI/Machine Learning implementations go above here... # # #
 
 
-def plot_graph():
-    pass
+def plot_graph(plot_data):
+
+    plt.style.use("seaborn-whitegrid")
+
+    print("Price History: " + str(plot_data[0]))  # Index 0 is the original price history used for training
+    print("Next (Real) Price: " + str(plot_data[1]))  # Index 1 is the next real price after price history
+    print("Next (Predicted) Price: " + str(plot_data[2]))  # Index 2 is the next predicted price after price history
+
+    x_axis = [x for x in range(len(plot_data[0]) + 1)]  # The y-axis is all the price stuff
+
+    plt.plot(x_axis[:-1], np.array(plot_data[0]), color="red")  # Price History is a red line chart on the graph
+    plt.scatter(x_axis[-1], np.array(plot_data[1]), color="green")  # Real next price is a green point on the plot
+    plt.scatter(x_axis[-1], np.array(plot_data[2]), color="blue")  # Predicted next price is a blue point on the plot
+
+    plt.annotate("Real", (x_axis[-1], np.array(plot_data[1])))
+    plt.annotate("Predicted", (x_axis[-1], np.array(plot_data[2])))
+
+    plt.show()
 
 
 def load_price_file():
@@ -95,7 +111,10 @@ def main():
     predicted_price = predict_price_svr(price_history)
     # predicted_price = predict_price_nusvr()
 
+    # # # Calls to AI/ML functions go above here # # #
+
     plot_data.append([predicted_price])
+    plot_graph(plot_data)
 
 
 if __name__ == "__main__":
