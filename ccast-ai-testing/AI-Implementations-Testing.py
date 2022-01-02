@@ -8,12 +8,13 @@ and/or machine learning, and graph the output for nicer visualisation.
 Implement as many different AIs and/or machine learning algorithms as you want and test them all here.
 
 """
-import numpy
+
 from sklearn.svm import SVR, NuSVR
 import matplotlib.pyplot as plt
 import numpy as np
 from random import randint
 from time import perf_counter_ns as stopwatch
+
 
 def predict_price_svr(price_history):
 
