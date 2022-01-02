@@ -82,6 +82,16 @@ def save_text_file(price_history):
 
 async def main():
 
+    """
+
+    The main method of the code, grabs exchange, grabs price history, writes to file, and closes the connection.
+
+    Note that in PyCharm you might get a RuntimeError, this is something to do with PyCharm and doesn't effect anything,
+    so ignore it.
+
+    :return:
+    """
+
     print("1. Getting Exchange")
 
     exchange = await get_exchange()
