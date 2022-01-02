@@ -39,8 +39,25 @@ def predict_price_svr(price_history):
     return predicted_price[0]
 
 
-def predict_price_nusvr():
-    pass
+def predict_price_nusvr(price_history):
+
+    """
+
+    Performs a Support Vector Regression using the NuSVR method
+
+    :param price_history: the price history list
+    :return: a predicted price based on the price history
+    """
+
+    data_points = [[i] for i in range(len(price_history))]
+
+    nu_support_vector_regression = NuSVR(kernel="rbf")  # Possible kernels are rbf, poly, and linear
+
+    nu_support_vector_regression.fit(data_points, price_history)
+
+    predicted_price = nu_support_vector_regression.predict([[len(data_points) + 1]])
+
+    return predicted_price[0]
 
 
 # # # AI/Machine Learning implementations go above here... # # #
@@ -108,8 +125,8 @@ def main():
     # # # Calls to AI/ML functions go below here # # #
     # # Uncomment the one AI being tested and comment out all the rest # #
 
-    predicted_price = predict_price_svr(price_history)
-    # predicted_price = predict_price_nusvr()
+    # predicted_price = predict_price_svr(price_history)
+    predicted_price = predict_price_nusvr(price_history)
 
     # # # Calls to AI/ML functions go above here # # #
 
