@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     Nav,
     NavLogo,
@@ -11,29 +11,27 @@ import {
 
 import logo from './resources/IconIdeas1.PNG'
 
-const Navbar = () => {
+const Navbar = () => {   
     return (
-        <>
-           <Nav className="navbar">
-            <NavLogo to="/">
-            <img src={logo} width={175} height={85}/>
-            </NavLogo>
+            <Nav className="navbar">
+                <NavLogo to="/">
+                    <img src={logo} width={175} height={85} />
+                </NavLogo>
 
-            <Bars />
+                <Bars />
 
-            <NavMenu>
-                <NavLink to="/" activeStyle>
-                    Home
-                </NavLink>
-                <NavLink to="/login" activeStyle>
-                    Login
-                </NavLink>
-                <NavLink to="/settings" activeStyle>
-                    Settings
-                </NavLink>
-            </NavMenu> 
-           </Nav> 
-        </>
+                <NavMenu>
+                    <NavLink to="/" activeStyle>
+                        Home
+                    </NavLink>
+                    <NavLink to="/login" activeStyle>
+                        Login
+                    </NavLink>
+                    <NavLink to="/settings" activeStyle>
+                        Settings
+                    </NavLink>
+                </NavMenu>
+            </Nav>
     );
 };
 export default Navbar;
