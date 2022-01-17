@@ -45,22 +45,33 @@ export default class Login extends Component {
     });
   }
 
+  // Handle the login request.
   handleLogin(e) {
+    // Disable the normal procedure so this code only executes.
     e.preventDefault();
 
+    // Clear messages and set loading to true.
     this.setState({
       message: "",
       loading: true
     });
 
+    // Check that all of the provided details are valid.
     this.form.validateAll();
 
+    // Attempt signin if there are no errors.
     if (this.checkBtn.context._errors.length === 0) {
+
+      // If the login is successful:
       AuthService.login(this.state.username, this.state.password).then(
         () => {
+          // Redirect to the profile page.
           this.props.history.push("/profile");
+          // Reload the page.
           window.location.reload();
         },
+
+        // If there was an error, get the message and set the message in the state.
         error => {
           const resMessage =
             (error.response &&
@@ -75,6 +86,7 @@ export default class Login extends Component {
           });
         }
       );
+      // Stop the login attempt due to invalid values.
     } else {
       this.setState({
         loading: false
@@ -90,8 +102,6 @@ export default class Login extends Component {
             src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
             alt="profile-img"
             className="profile-img-card"
-            width={50}
-            height={50}
           />
 
           <Form
@@ -123,6 +133,8 @@ export default class Login extends Component {
                 validations={[required]}
               />
             </div>
+
+            <br />
 
             <div className="form-group">
               <button

@@ -131,8 +131,6 @@ export default class Register extends Component {
             src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
             alt="profile-img"
             className="profile-img-card"
-            width={50}
-            height={50}
             
           />
 
@@ -180,6 +178,8 @@ export default class Register extends Component {
                   />
                 </div>
 
+                <br />
+
                 <div className="form-group">
                   <button className="btn btn-primary btn-block">Sign Up</button>
                 </div>
@@ -208,6 +208,7 @@ export default class Register extends Component {
             />
           </Form>
         </div>
+
 
         <p>
                 Already have an account? <br />

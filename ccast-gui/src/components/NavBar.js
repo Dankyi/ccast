@@ -11,7 +11,10 @@ import {
 
 import logo from './resources/IconIdeas1.PNG'
 
-const Navbar = () => {   
+const Navbar = () => {  
+    
+    
+    
     return (
             <Nav className="navbar">
                 <NavLogo to="/">
