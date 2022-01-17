@@ -1,205 +1,220 @@
-import React, { useRef, useState, useEffect } from 'react'
-import { FaCheck, FaFontAwesome, FaInfoCircle, FaTimes } from 'react-icons/fa';
-import { Link } from 'react-router-dom'
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import Form from "react-validation/build/form";
+import Input from "react-validation/build/input";
+import CheckButton from "react-validation/build/button";
+import { isEmail } from "validator";
 
-import './SignUp.css';
-import axios from '../api/axios';
+import AuthService from "../services/auth.service";
 
-const USER_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{3,23}$/;
-const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
+import './AuthForm.css';
 
-const REGISTER_URL = '/register';
-
-const SignUp = () => {
-
-    const userRef = useRef();
-    const errRef = useRef();
-
-    const [username, setUserName] = useState('');
-    const [validName, setValidName] = useState(false);
-    const [userFocus, setUserFocus] = useState(false);
-
-    const [password, setPassword] = useState('');
-    const [validPassword, setValidPassword] = useState(false);
-    const [passwordFocus, setPasswordFocus] = useState(false);
-
-    const [matchPassword, setMatchPassword] = useState('');
-    const [validMatch, setValidMatch] = useState(false);
-    const [matchFocus, setMatchFocus] = useState(false);
-
-    const [errMsg, setErrorMsg] = useState('');
-    const [success, setSuccess] = useState(false);
-
-    // Set the initial focus to the username field.
-    useEffect(() => {
-        userRef.current.focus();
-    }, [])
-
-    // Validate the username when the value changes.
-    useEffect(() => {
-        const result = USER_REGEX.test(username);
-        console.log(result);
-        console.log(username);
-        setValidName(result);
-    }, [username])
-
-    // Validate the password when the value changes.
-    useEffect(() => {
-        const result = PWD_REGEX.test(password);
-        console.log(result);
-        console.log(password);
-        setValidPassword(result);
-        const match = password === matchPassword;
-        setValidMatch(match);
-    }, [password, matchPassword])
-
-    // Remove error messages when the text fields change.
-    useEffect(() => {
-        setErrorMsg('');
-    }, [username, password, matchPassword])
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        // Catch any last minute issues.
-        const v1 = USER_REGEX.test(username);
-        const v2 = PWD_REGEX.test(password);
-        if (!v1 || !v2){
-            setErrorMsg ("Invalid Entry");
-            return;
-        }
-
-        try{
-            const response = await axios.post(
-                REGISTER_URL, 
-                JSON.stringify({username, password}),
-                {
-                    headers: {'Content-Type' : 'application/json'},
-                    withCredentials: true
-                }
-            );
-            console.log(response.data);
-            setSuccess(true);
-        }
-        catch (err) 
-        { 
-
-            if(!err?.response){setErrorMsg('No Server Response.');}
-            else if (err.response?.status === 409){setErrorMsg('Username Taken.')}
-            else if (err.response?.status === 400){setErrorMsg('Missing Username or Password.')}
-            else if (err.response?.status === 401){setErrorMsg('Incorrect Username or Password.')}
-            else{setErrorMsg('Login Failed.')}
-            errRef.current.focus();
-        }
-    }
-
+const required = value => {
+  if (!value) {
     return (
-        <section className='SignUp'>
+      <div className="alert alert-danger" role="alert">
+        This field is required!
+      </div>
+    );
+  }
+};
 
-            <p ref={errRef} className={errMsg ? "errmsg" :
-                "offscreen"} aria-live="assertive">{errMsg}
-            </p>
+const email = value => {
+  if (!isEmail(value)) {
+    return (
+      <div className="alert alert-danger" role="alert">
+        This is not a valid email.
+      </div>
+    );
+  }
+};
 
-            <h1> Sign Up </h1>
+const vusername = value => {
+  if (value.length < 3 || value.length > 20) {
+    return (
+      <div className="alert alert-danger" role="alert">
+        The username must be between 3 and 20 characters.
+      </div>
+    );
+  }
+};
 
-            <form onSubmit={handleSubmit}>
-                <label htmlFor='username'>
-                    Username:
-                    <span className={validName ? "valid" : "hide"}>
-                    <FaFontAwesome icon = {FaCheck}/>
-                    </span>
-                    <span className={validName || !username ? "hide" : "invalid"}>
-                        <FaFontAwesome icon={FaTimes}/>
-                    </span>
-                    <input
-                        type="text"
-                        id="username"
-                        ref={userRef}
-                        autocomplete="off"
-                        onChange={e => setUserName(e.target.value)}
-                        value={username}
-                        required
-                        aria-invalid={validName ? "false" : "true"}
-                        aria-describedby="uidnote"
-                        onFocus={() => setUserFocus(true)}
-                        onBlur={() => setUserFocus(false)}
-                    />
-                </label>
+const vpassword = value => {
+  if (value.length < 6 || value.length > 40) {
+    return (
+      <div className="alert alert-danger" role="alert">
+        The password must be between 6 and 40 characters.
+      </div>
+    );
+  }
+};
 
-                <p id='uidnote' className={userFocus && username && !validName ? "instructions" : "offscreen"}>
-                    <FaInfoCircle icon = {FaInfoCircle}/> <br />
-                4 to 24 characters.<br />
-                Must begin with a letter.<br />
-                Letters, Numbers, Underscores, Hyphens, are allowed.
-                </p>
+export default class Register extends Component {
+  constructor(props) {
+    super(props);
+    this.handleRegister = this.handleRegister.bind(this);
+    this.onChangeUsername = this.onChangeUsername.bind(this);
+    this.onChangeEmail = this.onChangeEmail.bind(this);
+    this.onChangePassword = this.onChangePassword.bind(this);
 
-                <label htmlFor='password'>
-                    Password:
-                    <span className={validPassword ? "valid" : "hide"}>
-                    <FaFontAwesome icon = {FaCheck}/>
-                    </span>
-                    <span className={validPassword || !password ? "hide" : "invalid"}>
-                        <FaFontAwesome icon={FaTimes}/>
-                    </span>
-                    <input
-                        type="password"
-                        id="password"
-                        onChange={e => setPassword(e.target.value)}
-                        value={password}
-                        required
-                        aria-invalid={validPassword ? "false" : "true"}
-                        aria-describedby="passwordnote"
-                        onFocus={() => setPasswordFocus(true)}
-                        onBlur={() => setPasswordFocus(false)}
-                    />
-                </label>
+    this.state = {
+      username: "",
+      email: "",
+      password: "",
+      successful: false,
+      message: ""
+    };
+  }
 
-                <p id='passwordnote' className={passwordFocus && password && !validPassword ? "instructions" : "offscreen"}>
-                    <FaInfoCircle icon = {FaInfoCircle}/> <br />
-                8 to 24 characters.<br />
-                Must include at least one Uppercase, Lowercase, Number, and Special character.<br />
-                
-                </p>
+  onChangeUsername(e) {
+    this.setState({
+      username: e.target.value
+    });
+  }
 
-                <label htmlFor='matchPassword'>
-                    Confirm Password:
-                    <span className={validMatch && matchPassword ? "valid" : "hide"}>
-                    <FaFontAwesome icon = {FaCheck}/>
-                    </span>
-                    <span className={validMatch || !matchPassword ? "hide" : "invalid"}>
-                        <FaFontAwesome icon={FaTimes}/>
-                    </span>
-                    <input
-                        type="password"
-                        id="matchPassword"
-                        onChange={e => setMatchPassword(e.target.value)}
-                        value={matchPassword}
-                        required
-                        aria-invalid={validMatch ? "false" : "true"}
-                        aria-describedby="matchnote"
-                        onFocus={() => setMatchFocus(true)}
-                        onBlur={() => setMatchFocus(false)}
-                    />
-                </label>
+  onChangeEmail(e) {
+    this.setState({
+      email: e.target.value
+    });
+  }
 
-                <p id='matchnote' className={matchFocus && !validMatch? "instructions" : "offscreen"}>
-                    <FaInfoCircle icon = {FaInfoCircle}/> <br />
-                Must match the first password input.
-                
-                </p>
+  onChangePassword(e) {
+    this.setState({
+      password: e.target.value
+    });
+  }
 
-                <div>
-                    <button disabled={!validName || !validPassword || !validMatch ? true : false}>Sign Up</button>
+  handleRegister(e) {
+    e.preventDefault();
+
+    this.setState({
+      message: "",
+      successful: false
+    });
+
+    this.form.validateAll();
+
+    if (this.checkBtn.context._errors.length === 0) {
+      AuthService.register(
+        this.state.username,
+        this.state.email,
+        this.state.password
+      ).then(
+        response => {
+          this.setState({
+            message: response.data.message,
+            successful: true
+          });
+        },
+        error => {
+          const resMessage =
+            (error.response &&
+              error.response.data &&
+              error.response.data.message) ||
+            error.message ||
+            error.toString();
+
+          this.setState({
+            successful: false,
+            message: resMessage
+          });
+        }
+      );
+    }
+  }
+
+  render() {
+    return (
+      <div className="AuthForm">
+        <div className="card card-container">
+          <img
+            src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
+            alt="profile-img"
+            className="profile-img-card"
+            width={50}
+            height={50}
+            
+          />
+
+          <Form
+            onSubmit={this.handleRegister}
+            ref={c => {
+              this.form = c;
+            }}
+          >
+            {!this.state.successful && (
+              <div>
+                <div className="form-group">
+                  <label htmlFor="username">Username</label>
+                  <Input
+                    type="text"
+                    className="form-control"
+                    name="username"
+                    value={this.state.username}
+                    onChange={this.onChangeUsername}
+                    validations={[required, vusername]}
+                  />
                 </div>
-            </form>
 
-            <p>
+                <div className="form-group">
+                  <label htmlFor="email">Email</label>
+                  <Input
+                    type="text"
+                    className="form-control"
+                    name="email"
+                    value={this.state.email}
+                    onChange={this.onChangeEmail}
+                    validations={[required, email]}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="password">Password</label>
+                  <Input
+                    type="password"
+                    className="form-control"
+                    name="password"
+                    value={this.state.password}
+                    onChange={this.onChangePassword}
+                    validations={[required, vpassword]}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <button className="btn btn-primary btn-block">Sign Up</button>
+                </div>
+              </div>
+            )}
+
+            {this.state.message && (
+              <div className="form-group">
+                <div
+                  className={
+                    this.state.successful
+                      ? "alert alert-success"
+                      : "alert alert-danger"
+                  }
+                  role="alert"
+                >
+                  {this.state.message}
+                </div>
+              </div>
+            )}
+            <CheckButton
+              style={{ display: "none" }}
+              ref={c => {
+                this.checkBtn = c;
+              }}
+            />
+          </Form>
+        </div>
+
+        <p>
                 Already have an account? <br />
-                <li><Link to="/login">Login</Link></li>
+
+                <li><Link to="/login">Sign In</Link></li>
             </p>
-
-        </section>
-    )
+      </div>
+    );
+  }
 }
-
-export default SignUp
