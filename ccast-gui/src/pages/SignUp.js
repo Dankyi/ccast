@@ -9,6 +9,12 @@ import AuthService from "../services/auth.service";
 
 import './AuthForm.css';
 
+// Enforce a password policy:
+//    At least 8 characters long.
+//    At least 1 Uppercase and Lowercase letter.
+//    At least 1 digit.
+const PASSWORD_REGEX = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$")
+
 const required = value => {
   if (!value) {
     return (
@@ -19,6 +25,7 @@ const required = value => {
   }
 };
 
+// Create verifications for the variables.
 const email = value => {
   if (!isEmail(value)) {
     return (
@@ -40,14 +47,26 @@ const vusername = value => {
 };
 
 const vpassword = value => {
-  if (value.length < 6 || value.length > 40) {
+
+  if (!PASSWORD_REGEX.test(value)) {
     return (
       <div className="alert alert-danger" role="alert">
-        The password must be between 6 and 40 characters.
+        The password must be at least 8 characters, and contain at least one Uppercase letter, one Lowercase letter, and one number.
       </div>
     );
   }
 };
+
+const vmatchpassword = value => {
+  if (value != vpassword){
+  return (
+    <div className="alert alert-danger" role="alert">
+      The provided passwords do not match.
+    </div>
+  );
+  }
+};
+
 
 export default class Register extends Component {
   constructor(props) {
@@ -56,16 +75,19 @@ export default class Register extends Component {
     this.onChangeUsername = this.onChangeUsername.bind(this);
     this.onChangeEmail = this.onChangeEmail.bind(this);
     this.onChangePassword = this.onChangePassword.bind(this);
+    this.onChangeMatchPassword = this.onChangeMatchPassword.bind(this);
 
     this.state = {
       username: "",
       email: "",
       password: "",
+      matchPassword: "",
       successful: false,
       message: ""
     };
   }
 
+  // Update the variables when the text inputs change.
   onChangeUsername(e) {
     this.setState({
       username: e.target.value
@@ -81,6 +103,12 @@ export default class Register extends Component {
   onChangePassword(e) {
     this.setState({
       password: e.target.value
+    });
+  }
+
+  onChangeMatchPassword(e){
+    this.setState({
+      matchPassword: e.target.value
     });
   }
 
@@ -175,6 +203,18 @@ export default class Register extends Component {
                     value={this.state.password}
                     onChange={this.onChangePassword}
                     validations={[required, vpassword]}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="matchPassword">Confirm Password</label>
+                  <Input
+                    type="password"
+                    className="form-control"
+                    name="matchPassword"
+                    value={this.state.matchpassword}
+                    onChange={this.onChangeMatchPassword}
+                    validations={[required, vmatchpassword]}
                   />
                 </div>
 
