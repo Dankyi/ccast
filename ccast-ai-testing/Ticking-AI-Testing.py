@@ -87,11 +87,11 @@ async def main():
 
     if coin_index > -1:
 
-        data_points = 15  # How many points to gather before training + prediction
+        data_points = 4  # How many points to gather before training + prediction
                           # Note that the rate limit of HitBTC is 1.5 seconds, so 10 will take 15 seconds!!
                           # Add 1.5 seconds to the end also, for the next real price for comparison.
 
-        prediction_amount = 10  # How many predictions to be made
+        prediction_amount = 40  # How many predictions to be made
                                 # This is temporary for testing, in the real product this would loop until interrupted
                                 # E.g., from the user telling the program to stop
 
