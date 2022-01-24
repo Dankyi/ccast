@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import Form from "react-validation/build/form";
 import Input from "react-validation/build/input";
 import CheckButton from "react-validation/build/button";
@@ -66,7 +66,8 @@ export default class Login extends Component {
       AuthService.login(this.state.username, this.state.password).then(
         () => {
           // Redirect to the profile page.
-          this.props.history.push("/profile");
+          //this.props.history.push("/profile");
+          return <Navigate to='/'/>
           // Reload the page.
           window.location.reload();
         },

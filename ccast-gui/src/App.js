@@ -9,21 +9,26 @@ import NavBar from './components/NavBar';
 import "bootstrap/dist/css/bootstrap.min.css";
 
 
-function App() {
 
-    return (
-        <div>
-            <NavBar />
-            <Routes>
-                <Route path="/" element={<Main />} />
-                <Route path="/main" element={<Main />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<SignUp />} />
-                <Route path="/user" element={<User />} />
-                <Route path="/profile" element={<Profile />} />
-            </Routes>
-        </div>
-    );
+class App extends React.Component {
+    constructor(props) {
+        super(props);
+      }
+    render(){
+        return (
+            <div>
+                <NavBar />
+                <Routes>
+                    <Route path="/" element={<Main />} />
+                    <Route path="/main" element={<Main />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/signup" element={<SignUp />} />
+                    <Route path="/user" element={<User />} />
+                    <Route path="/profile" element={<Profile />} />
+                </Routes>
+            </div>
+        );
+    }
 }
 
 export default App
