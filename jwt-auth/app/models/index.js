@@ -27,17 +27,20 @@ db.sequelize = sequelize;
 db.user = require("../models/user.model.js")(sequelize, Sequelize);
 db.role = require("../models/role.model.js")(sequelize, Sequelize);
 
+// Create empty junction table to remove timestamp generation.
+var userRoles = sequelize.define('user_roles', {}, {  timestamps: false});
+
 // Define belongsToMany to solve Many-to-Many database issues.
 
 db.role.belongsToMany(db.user, {
-  through: "user_roles",
+  through: userRoles,
   foreignKey: "roleId",
   otherKey: "userId"
 });
 db.user.belongsToMany(db.role, {
-  through: "user_roles",
+  through: userRoles,
   foreignKey: "userId",
-  otherKey: "roleId"
+  otherKey: "roleId",
 });
 
 db.ROLES = ["user", "admin", "moderator"];
