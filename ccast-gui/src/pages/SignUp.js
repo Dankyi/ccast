@@ -9,12 +9,6 @@ import AuthService from "../services/auth.service";
 
 import './AuthForm.css';
 
-// Enforce a password policy:
-//    At least 8 characters long.
-//    At least 1 Uppercase and Lowercase letter.
-//    At least 1 digit.
-const PASSWORD_REGEX = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$")
-
 const required = value => {
   if (!value) {
     return (
@@ -48,7 +42,7 @@ const vusername = value => {
 
 const vpassword = value => {
 
-  if (!PASSWORD_REGEX.test(value)) {
+  if (!ValidPassword(value)) {
     return (
       <div className="alert alert-danger" role="alert">
         The password must be at least 8 characters, and contain at least one Uppercase letter, one Lowercase letter, and one number.
@@ -58,7 +52,7 @@ const vpassword = value => {
 };
 
 const vmatchpassword = value => {
-  if (value != vpassword){
+  if (!PasswordMatch){
   return (
     <div className="alert alert-danger" role="alert">
       The provided passwords do not match.
@@ -66,6 +60,37 @@ const vmatchpassword = value => {
   );
   }
 };
+
+
+function PasswordMatch()
+{
+
+  if (true) return true;
+  return false;
+}
+
+
+/**
+ * Enforce a password policy:
+  At least 8 characters long.
+  At least 1 Uppercase and Lowercase letter.
+  At least 1 digit.
+ * @param {string} value 
+ */
+function ValidPassword(value)
+{
+  var length = 8;
+  if (value.length < length) return false;
+
+  // If the converted values are identical, then all characters are either upper or lowercase.
+  if (value.toLocaleLowerCase === value || value.toLocaleUpperCase === value) return false;
+
+  const NUMERIC_REGEX = /[0-9]/;
+
+  return NUMERIC_REGEX.test(value);
+
+}
+
 
 
 export default class Register extends Component {
@@ -89,9 +114,12 @@ export default class Register extends Component {
 
   // Update the variables when the text inputs change.
   onChangeUsername(e) {
+    var input = e.target.value
     this.setState({
-      username: e.target.value
+      username: input
     });
+    console.log("E: " + input)
+    console.log("State: " + this.state.username)
   }
 
   onChangeEmail(e) {
