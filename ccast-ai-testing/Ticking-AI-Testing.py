@@ -69,9 +69,9 @@ def calculate_accuracy(accuracy_dict, previous_real_price, next_real_price, next
             accuracy_dict["TP"] += 1
         elif next_real_price < previous_real_price and next_predicted_price < previous_real_price:
             accuracy_dict["TN"] += 1
-        elif next_real_price < previous_real_price and next_predicted_price >= previous_real_price:
+        elif next_real_price < previous_real_price <= next_predicted_price:
             accuracy_dict["FP"] += 1
-        elif next_real_price >= previous_real_price and next_predicted_price < previous_real_price:
+        elif next_real_price >= previous_real_price > next_predicted_price:
             accuracy_dict["FN"] += 1
 
         print()
@@ -111,7 +111,7 @@ async def main():
     exchange = await get_exchange()
 
     coin_index = -1
-    coin = "BTC/USDT"
+    coin = "ETH/USDT"  # Default: BTC/USDT
 
     if coin in exchange.symbols:
         coin_index = exchange.symbols.index(coin)
