@@ -80,7 +80,7 @@ def calculate_accuracy(accuracy_dict, previous_real_price, next_real_price, next
         print("Accuracy Tally: " + str(accuracy_dict))
 
 
-def plot_graph(plot_data, data_points):
+def plot_graph(plot_title, plot_data, data_points):
 
     """
 
@@ -92,6 +92,8 @@ def plot_graph(plot_data, data_points):
     """
 
     plt.style.use("seaborn-whitegrid")
+
+    plt.title(plot_title)
 
     x_axis = [x for x in range(len(plot_data[0]))]
     x_axis_predicted_points = []
@@ -176,7 +178,7 @@ async def main():
 
         calculate_accuracy(accuracy_dict, 0, 0, 0, True)
 
-        plot_graph(plot_data, data_points + 1)
+        plot_graph(coin, plot_data, data_points + 1)
 
     await exchange.close()
 
