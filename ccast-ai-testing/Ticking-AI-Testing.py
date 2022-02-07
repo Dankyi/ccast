@@ -20,7 +20,8 @@ import asyncio
 
 async def get_exchange():
 
-    exchange = ccxt.hitbtc({"verbose": False, "enableRateLimit": True})
+    #  Default: ccxt.hitbtc, but Binance has a rate limit of just 50ms for some reason, much faster
+    exchange = ccxt.binance({"verbose": False, "enableRateLimit": True})
     await exchange.load_markets(True)
 
     return exchange
@@ -43,6 +44,38 @@ def predict_next_price(price_list):
     predicted_price = nu_svr.predict([[len(data_points) + 1]])
 
     return predicted_price
+
+
+def calculate_accuracy(accuracy_dict, previous_real_price, next_real_price, next_predicted_price, is_finished):
+
+    # https://doi.org/10.3390/e21060589
+    # Page 7 of 12 gives us a way to evaluate the accuracy of our models
+
+    if is_finished:
+
+        t_p = accuracy_dict["TP"]  # True Positives
+        t_n = accuracy_dict["TN"]  # True Negatives
+        f_p = accuracy_dict["FP"]  # False Positives
+        f_n = accuracy_dict["FN"]  # False Negatives
+
+        accuracy = (t_p + t_n) / (t_p + t_n + f_p + f_n)
+
+        print("Accuracy: " + str(accuracy))
+        print()
+
+    else:
+
+        if next_real_price >= previous_real_price and next_predicted_price >= previous_real_price:
+            accuracy_dict["TP"] += 1
+        elif next_real_price < previous_real_price and next_predicted_price < previous_real_price:
+            accuracy_dict["TN"] += 1
+        elif next_real_price < previous_real_price and next_predicted_price >= previous_real_price:
+            accuracy_dict["FP"] += 1
+        elif next_real_price >= previous_real_price and next_predicted_price < previous_real_price:
+            accuracy_dict["FN"] += 1
+
+        print()
+        print(accuracy_dict)
 
 
 def plot_graph(plot_data, data_points):
@@ -87,6 +120,11 @@ async def main():
 
     if coin_index > -1:
 
+        accuracy_dict = {"TP": 0,  # True Positive (Model predicts higher, reality is higher)
+                         "TN": 0,  # True Negative (Model predicts lower, reality is lower)
+                         "FP": 0,  # False Positive (Model predicts higher, reality is lower)
+                         "FN": 0}  # False Negative (Model predicts lower, reality is higher)
+
         data_points = 4  # How many points to gather before training + prediction
                           # Note that the rate limit of HitBTC is 1.5 seconds, so 10 will take 15 seconds!!
                           # Add 1.5 seconds to the end also, for the next real price for comparison.
@@ -114,6 +152,7 @@ async def main():
             s_time = stopwatch()
 
             predicted_price = predict_next_price(price_list[:-1])
+            calculate_accuracy(accuracy_dict, price_list[-2], price_list[-1], predicted_price[0], False)
 
             plot_data[0] += price_list
             plot_data[1].append(predicted_price)
@@ -132,6 +171,8 @@ async def main():
             print("AI Training & Prediction Time Taken: " + str(e_time) + "ms")
 
             print()  # Empty print to make it look nicer
+
+        calculate_accuracy(accuracy_dict, 0, 0, 0, True)
 
         plot_graph(plot_data, data_points + 1)
 
