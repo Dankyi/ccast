@@ -59,8 +59,10 @@ def calculate_accuracy(accuracy_dict, previous_real_price, next_real_price, next
         f_n = accuracy_dict["FN"]  # False Negatives
 
         accuracy = (t_p + t_n) / (t_p + t_n + f_p + f_n)
+        precision = t_p / (t_p + f_p)
 
         print("Accuracy: " + str(accuracy))
+        print("Precision: " + str(precision))
         print()
 
     else:
@@ -75,7 +77,7 @@ def calculate_accuracy(accuracy_dict, previous_real_price, next_real_price, next
             accuracy_dict["FN"] += 1
 
         print()
-        print(accuracy_dict)
+        print("Accuracy Tally: " + str(accuracy_dict))
 
 
 def plot_graph(plot_data, data_points):
@@ -129,7 +131,7 @@ async def main():
                           # Note that the rate limit of HitBTC is 1.5 seconds, so 10 will take 15 seconds!!
                           # Add 1.5 seconds to the end also, for the next real price for comparison.
 
-        prediction_amount = 40  # How many predictions to be made
+        prediction_amount = 64  # How many predictions to be made
                                 # This is temporary for testing, in the real product this would loop until interrupted
                                 # E.g., from the user telling the program to stop
 
