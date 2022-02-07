@@ -39,9 +39,9 @@ def predict_next_price(price_list):
 
     data_points = [[i] for i in range(len(price_list))]
 
-    nu_svr = NuSVR(kernel="rbf")
-    nu_svr.fit(data_points, price_list)
-    predicted_price = nu_svr.predict([[len(data_points) + 1]])
+    predictive_model = NuSVR(kernel="rbf")
+    predictive_model.fit(data_points, price_list)
+    predicted_price = predictive_model.predict([[len(data_points) + 1]])
 
     return predicted_price
 
