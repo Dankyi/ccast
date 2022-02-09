@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import Form from "react-validation/build/form";
+import Form, { form } from "react-validation/build/form";
 import Input from "react-validation/build/input";
 import CheckButton from "react-validation/build/button";
 import { isEmail } from "validator";
@@ -49,25 +49,20 @@ const vpassword = value => {
       </div>
     );
   }
+
 };
 
 const vmatchpassword = value => {
-  if (!PasswordMatch){
+  /**if (!PasswordMatch(value)){
   return (
     <div className="alert alert-danger" role="alert">
       The provided passwords do not match.
     </div>
   );
-  }
+  }*/
+
 };
 
-
-function PasswordMatch()
-{
-
-  if (true) return true;
-  return false;
-}
 
 
 /**
@@ -91,6 +86,19 @@ function ValidPassword(value)
 
 }
 
+/**
+ * Check if the password and password confirmations match.
+ * @returns whether the values are the same or not.
+ */
+function PasswordMatch(value)
+{
+  if (this.state !== undefined) {
+    return this.state.password === value
+  }
+  console.log("State is undefined.")
+  return false;
+}
+
 
 
 export default class Register extends Component {
@@ -103,44 +111,41 @@ export default class Register extends Component {
     this.onChangeMatchPassword = this.onChangeMatchPassword.bind(this);
 
     this.state = {
-      username: "",
-      email: "",
-      password: "",
-      matchPassword: "",
+      username: '',
+      email: '',
+      password: '',
+      matchPassword: '',
       successful: false,
-      message: ""
+      message: ''
     };
   }
 
   // Update the variables when the text inputs change.
-  onChangeUsername(e) {
-    var input = e.target.value
+  onChangeUsername = (e) => {
     this.setState({
-      username: input
+      username: e.target.value
     });
-    console.log("E: " + input)
-    console.log("State: " + this.state.username)
   }
 
-  onChangeEmail(e) {
+  onChangeEmail = (e) => {
     this.setState({
       email: e.target.value
     });
   }
 
-  onChangePassword(e) {
+  onChangePassword = (e) => {
     this.setState({
       password: e.target.value
     });
   }
 
-  onChangeMatchPassword(e){
+  onChangeMatchPassword = (e) => {
     this.setState({
       matchPassword: e.target.value
     });
   }
 
-  handleRegister(e) {
+  handleRegister = (e) => {
     e.preventDefault();
 
     this.setState({
@@ -150,7 +155,14 @@ export default class Register extends Component {
 
     this.form.validateAll();
 
-    if (this.checkBtn.context._errors.length === 0) {
+    if (this.state.password !== this.state.matchPassword){
+      this.setState({
+        successful: false,
+        message: "The provided passwords do not match."
+      });
+    }
+
+    else if (this.checkBtn.context._errors.length === 0) {
       AuthService.register(
         this.state.username,
         this.state.email,
@@ -177,7 +189,7 @@ export default class Register extends Component {
         }
       );
     }
-  }
+  } 
 
   render() {
     return (
