@@ -59,13 +59,21 @@ export const NavMenu = styled.div`
 `;
 
 export const NavBtn = styled.nav`
-  display: flex;
+color: #fff;  
+display: flex;
   align-items: center;
   margin-right: 24px;
 
   @media screen and (max-width: 768px) {
     display: none;
   }
+  cursor: pointer;
+&.active {
+  color:#0f0;
+}
+&:hover {
+  color: #0f0;
+}
 `;
 
 export const NavBtnLink = styled(Link)`
