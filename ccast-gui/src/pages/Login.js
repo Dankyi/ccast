@@ -1,12 +1,91 @@
-import React, { Component } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import {Navigate, useNavigate, Link} from 'react-router-dom'
 import Form from "react-validation/build/form";
 import Input from "react-validation/build/input";
 import CheckButton from "react-validation/build/button";
-
-import AuthService from "../services/auth.service";
+import AuthService from '../services/auth.service';
 
 import './AuthForm.css';
+
+
+export default function Login() {
+
+// States for registration
+const [username, setUsername] = useState('');
+const [password, setPassword] = useState('');
+const [loading, setLoading] = useState(false);
+const [message, setMessage] = useState('');
+
+
+// States for checking the errors
+const [submitted, setSubmitted] = useState(false);
+const [error, setError] = useState(false);
+
+// Handling the email change
+const handleEmail = (e) => {
+	setUsername(e.target.value);
+	setSubmitted(false);
+};
+
+// Handling the password change
+const handlePassword = (e) => {
+	setPassword(e.target.value);
+	setSubmitted(false);
+};
+
+// Handling the form submission
+const handleSubmit = (e) => {
+	// Disable the normal procedure so this code only executes.
+  e.preventDefault();
+
+  // Clear messages and set loading to true.
+  setMessage("");
+  setLoading(true);
+
+
+  // Check that all of the provided details are valid.
+  //this.form.validateAll();
+
+
+    // If the login is successful:
+    AuthService.login(username, password).then(
+      () => {
+        navigate("/");
+      },
+
+      // If there was an error, get the message and set the message in the state.
+      error => {
+        const resMessage =
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message ||
+          error.toString();
+
+        setLoading(false);
+        setMessage(resMessage);
+        errorMessage();
+      }      
+    );
+    
+    // Stop the login attempt due to invalid values.
+ 
+
+};
+
+
+// Showing error message if error is true
+const errorMessage = () => {
+	return (
+	<div
+		className="error"
+		style={{
+		display: error ? '' : 'none',
+		}}>
+		<h1>{message}</h1>
+	</div>
+	);
+};
 
 const required = value => {
   if (!value) {
@@ -18,86 +97,10 @@ const required = value => {
   }
 };
 
-export default class Login extends Component {
-  constructor(props) {
-    super(props);
-    this.handleLogin = this.handleLogin.bind(this);
-    this.onChangeUsername = this.onChangeUsername.bind(this);
-    this.onChangePassword = this.onChangePassword.bind(this);
+let navigate = useNavigate();
 
-    this.state = {
-      username: "",
-      password: "",
-      loading: false,
-      message: ""
-    };
-  }
-
-  onChangeUsername(e) {
-    this.setState({
-      username: e.target.value
-    });
-  }
-
-  onChangePassword(e) {
-    this.setState({
-      password: e.target.value
-    });
-  }
-
-  // Handle the login request.
-  handleLogin(e) {
-    // Disable the normal procedure so this code only executes.
-    e.preventDefault();
-
-    // Clear messages and set loading to true.
-    this.setState({
-      message: "",
-      loading: true
-    });
-
-    // Check that all of the provided details are valid.
-    this.form.validateAll();
-
-    // Attempt signin if there are no errors.
-    if (this.checkBtn.context._errors.length === 0) {
-
-      // If the login is successful:
-      AuthService.login(this.state.username, this.state.password).then(
-        () => {
-          // Redirect to the profile page.
-          //this.props.history.push("/profile");
-          return <Navigate to='/'/>
-          // Reload the page.
-          window.location.reload();
-        },
-
-        // If there was an error, get the message and set the message in the state.
-        error => {
-          const resMessage =
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
-            error.message ||
-            error.toString();
-
-          this.setState({
-            loading: false,
-            message: resMessage
-          });
-        }
-      );
-      // Stop the login attempt due to invalid values.
-    } else {
-      this.setState({
-        loading: false
-      });
-    }
-  }
-
-  render() {
-    return (
-      <div className="AuthForm">
+return (
+	<div className="AuthForm">
         <div className="card card-container">
           <img
             src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
@@ -106,10 +109,8 @@ export default class Login extends Component {
           />
 
           <Form
-            onSubmit={this.handleLogin}
-            ref={c => {
-              this.form = c;
-            }}
+            onSubmit={handleSubmit}
+            
           >
             <div className="form-group">
               <label htmlFor="username">Username</label>
@@ -117,8 +118,8 @@ export default class Login extends Component {
                 type="text"
                 className="form-control"
                 name="username"
-                value={this.state.username}
-                onChange={this.onChangeUsername}
+                value={username}
+                onChange={handleEmail}
                 validations={[required]}
               />
             </div>
@@ -129,8 +130,8 @@ export default class Login extends Component {
                 type="password"
                 className="form-control"
                 name="password"
-                value={this.state.password}
-                onChange={this.onChangePassword}
+                value={password}
+                onChange={handlePassword}
                 validations={[required]}
               />
             </div>
@@ -140,27 +141,24 @@ export default class Login extends Component {
             <div className="form-group">
               <button
                 className="btn btn-primary btn-block"
-                disabled={this.state.loading}
+                disabled={loading}
               >
-                {this.state.loading && (
+                {loading && (
                   <span className="spinner-border spinner-border-sm"></span>
                 )}
                 <span>Login</span>
               </button>
             </div>
 
-            {this.state.message && (
+            {message && (
               <div className="form-group">
                 <div className="alert alert-danger" role="alert">
-                  {this.state.message}
+                  {message}
                 </div>
               </div>
             )}
             <CheckButton
-              style={{ display: "none" }}
-              ref={c => {
-                this.checkBtn = c;
-              }}
+              style={{ display: "none" }}              
             />
           </Form>
         </div>
@@ -171,7 +169,5 @@ export default class Login extends Component {
                 <li><Link to="/signup">Sign Up</Link></li>
             </p>
       </div>
-      
-    );
-  }
+);
 }
