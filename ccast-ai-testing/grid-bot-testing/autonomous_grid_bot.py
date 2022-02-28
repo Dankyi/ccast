@@ -22,6 +22,34 @@ async def get_current_price(exchange, coin_pair_id):
     return current_price
 
 
+def calculate_grid(current_price):
+
+    stepping_percentage = 0.01  # Approx. 1% per grid, later AI will determine this itself?
+    grid_amount = 32  # Later AI will determine this itself based on how much money the user is investing
+
+    stepping = current_price * stepping_percentage
+
+    increment = current_price
+    decrement = current_price
+    upper_values = []
+    lower_values = []
+
+    grid = []
+
+    for _ in range(grid_amount // 2):  # Half lower, half higher, than current price
+
+        increment += stepping
+        decrement -= stepping
+
+        upper_values.append(increment)
+        lower_values.append(decrement)
+
+    [grid.append(i) for i in reversed(lower_values)]
+    [grid.append(i) for i in upper_values]
+
+    return grid
+
+
 async def main():
 
     exchange = await get_exchange()
@@ -37,7 +65,15 @@ async def main():
     if coin_pair_id > -1:
 
         current_price = await get_current_price(exchange, coin_pair_id)
-        print(current_price)
+        print("Current Price of " + coin_pair + " -> " + str(current_price))
+
+        s_time = stopwatch()
+        grid = calculate_grid(current_price)
+        e_time = stopwatch() - s_time
+        e_time /= 1_000_000
+
+        print("Grid Calculation Time: " + str(e_time) + "ms")
+        print(grid)
 
     await exchange.close()
 
