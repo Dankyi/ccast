@@ -1,4 +1,5 @@
 from time import perf_counter_ns as stopwatch
+import matplotlib.pyplot as plt
 import ccxt.async_support as ccxt
 import asyncio
 
@@ -12,6 +13,16 @@ async def get_exchange():
     print("Rate Limit: " + str(exchange.rateLimit) + "ms")
 
     return exchange
+
+
+def plot_grid(grid):
+
+    fig, ax = plt.subplots()
+
+    ax.set_yticks(grid, minor=False)
+    ax.yaxis.grid(True, which="major")
+
+    plt.show()
 
 
 async def get_current_price(exchange, coin_pair_id):
@@ -74,6 +85,8 @@ async def main():
 
         print("Grid Calculation Time: " + str(e_time) + "ms")
         print(grid)
+
+        plot_grid(grid)
 
     await exchange.close()
 
