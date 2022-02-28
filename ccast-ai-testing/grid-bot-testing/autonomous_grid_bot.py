@@ -54,6 +54,13 @@ async def get_current_price(exchange, coin_pair_id):
 
 def calculate_grid(current_price):
 
+    """
+
+    Note the upper and lower values are determined lazily, a better solution is for the AI to figure out a lower and
+    upper bound, and then split that range evenly into grids (that is self-determines too)
+
+    """
+
     stepping_percentage = 0.01  # Approx. 1% per grid, later AI will determine this itself?
     grid_amount = 32  # Later AI will determine this itself based on how much money the user is investing
 
