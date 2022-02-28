@@ -33,6 +33,11 @@ class AuthService {
   getCurrentUser() {
     return JSON.parse(localStorage.getItem('user'));;
   }
+
+  isLoggedIn(){
+    const isLoggedIn = JSON.parse(localStorage.getItem('user'));
+    return (isLoggedIn !== null);
+  }
 }
 
 export default new AuthService();

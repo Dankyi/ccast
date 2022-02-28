@@ -12,16 +12,15 @@ import authService from "../services/auth.service";
 
 import logo from './resources/IconIdeas1.PNG'
 
-const Navbar = () => {  
-    
-    const isLoggedIn = authService.getCurrentUser();
-    console.log(isLoggedIn);
-    
-    if (isLoggedIn === null)
-    return <DefaultNavbar />;
-    else return <UserNavbar />;
-    
+// Update the navbar when the local storage changes.
+
+
+function Navbar()
+{
+    const isAuth = authService.isLoggedIn;
+  return isAuth ? <UserNavbar /> : <DefaultNavbar />;
 };
+
 
 const DefaultNavbar = () => 
 { 
