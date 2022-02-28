@@ -29,6 +29,10 @@ async def plot_grid(grid, exchange, coin_pair_id):
 
     fig, ax = plt.subplots()
 
+    ax.title.set_text(exchange.symbols[coin_pair_id] + " Grid")
+    ax.set_xlabel("Time Period")
+    ax.set_ylabel("Pair Price")
+
     y_axis = await get_price_history(exchange, coin_pair_id)
     x_axis = [x for x in range(len(y_axis))]
 
@@ -71,7 +75,10 @@ def calculate_grid(current_price):
         lower_values.append(decrement)
 
     [grid.append(i) for i in reversed(lower_values)]
+    grid.append(current_price)
     [grid.append(i) for i in upper_values]
+
+    grid.pop()  # Remove uppermost element, makes it grid_amount instead of grid_amount + 1 (e.g., 32 instead of 33)
 
     return grid
 
