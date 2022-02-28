@@ -15,9 +15,24 @@ async def get_exchange():
     return exchange
 
 
-def plot_grid(grid):
+async def plot_grid(grid, exchange, coin_pair_id):
+
+    async def get_price_history(ex, c_p_id):
+
+        candle_stick_data = await ex.fetch_ohlcv(ex.symbols[c_p_id], "1d")
+        price_history = []
+
+        for candle_stick in candle_stick_data:
+            price_history.append(candle_stick[3])
+
+        return price_history[-60:]
 
     fig, ax = plt.subplots()
+
+    y_axis = await get_price_history(exchange, coin_pair_id)
+    x_axis = [x for x in range(len(y_axis))]
+
+    ax.plot(x_axis, y_axis)
 
     ax.set_yticks(grid, minor=False)
     ax.yaxis.grid(True, which="major")
@@ -86,7 +101,7 @@ async def main():
         print("Grid Calculation Time: " + str(e_time) + "ms")
         print(grid)
 
-        plot_grid(grid)
+        await plot_grid(grid, exchange, coin_pair_id)
 
     await exchange.close()
 
