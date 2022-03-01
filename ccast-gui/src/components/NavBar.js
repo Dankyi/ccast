@@ -17,7 +17,8 @@ import logo from './resources/IconIdeas1.PNG'
 
 function Navbar()
 {
-    const isAuth = authService.isLoggedIn;
+    var isAuth = authService.isLoggedIn();
+    console.log(isAuth);
   return isAuth ? <UserNavbar /> : <DefaultNavbar />;
 };
 

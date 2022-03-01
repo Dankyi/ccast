@@ -20,6 +20,7 @@ class AuthService {
 
   logout() {
     localStorage.removeItem("user");
+    window.location.reload(false);
   }
 
   register(username, email, password) {
@@ -35,8 +36,9 @@ class AuthService {
   }
 
   isLoggedIn(){
-    const isLoggedIn = JSON.parse(localStorage.getItem('user'));
-    return (isLoggedIn !== null);
+    var isLoggedIn = JSON.parse(localStorage.getItem('user'));
+    if (isLoggedIn === null) return false;
+    return true;
   }
 }
 

@@ -51,6 +51,7 @@ const handleSubmit = (e) => {
     AuthService.login(username, password).then(
       () => {
         navigate("/");
+        window.location.reload(false);
       },
 
       // If there was an error, get the message and set the message in the state.
