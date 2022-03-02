@@ -17,6 +17,9 @@ async def get_exchange():
 
 def find_coin(exchange):
 
+    for coin_pair in exchange.symbols:
+        print(coin_pair)
+
     return ""
 
 
@@ -30,7 +33,7 @@ async def main():
     e_time /= 1_000_000
 
     print("Best Coin: " + str(best_coin))
-    print("Time Taken to Determine: " + str(e_time))
+    print("Time Taken to Determine: " + str(e_time) + "ms")
     print()
 
     await exchange.close()
