@@ -15,12 +15,36 @@ async def get_exchange():
     return exchange
 
 
-def find_coin(exchange):
+async def find_coin(exchange):
+
+    best_coin = ""
+    tightest_percentage = 100
+
+    PROGRESS = 0  # For debug purposes
+    TOTAL_COIN_PAIRS = len(exchange.symbols)  # For debug purposes
 
     for coin_pair in exchange.symbols:
-        print(coin_pair)
 
-    return ""
+        coin_pair_index = exchange.symbols.index(coin_pair)
+
+        candle_stick_data = await exchange.fetch_ohlcv(exchange.symbols[coin_pair_index], "1d")
+        candle_stick = candle_stick_data[-1]  # Gets yesterday's final candle stick
+
+        high_price = candle_stick[2]  # Yesterday's high and low
+        low_price = candle_stick[3]
+
+        difference = 1.0 - (low_price / high_price)
+
+        if difference < tightest_percentage:
+            best_coin = coin_pair
+            tightest_percentage = difference
+
+        PROGRESS += 1  # For debug purposes
+        PERCENTAGE = (PROGRESS / TOTAL_COIN_PAIRS) * 100.0  # For debug purposes
+        print(f"Completed: {PROGRESS}/{TOTAL_COIN_PAIRS} -> " + str("%.2f" % PERCENTAGE) + "%")
+
+
+    return best_coin
 
 
 async def main():
@@ -28,7 +52,7 @@ async def main():
     exchange = await get_exchange()
 
     s_time = stopwatch()
-    best_coin = find_coin(exchange)
+    best_coin = await find_coin(exchange)
     e_time = stopwatch() - s_time
     e_time /= 1_000_000
 
