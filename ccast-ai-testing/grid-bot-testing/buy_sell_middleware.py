@@ -51,6 +51,8 @@ if __name__ == "__main__":
     For the purposes of this test, store your keys in a text file called "my-api-keys.txt" on the same line, separated
     by a comma, like this: key1,key2
     
+    If you don't use Kraken (I did), then change ccxt.kraken(..) to whatever exchange you used.
+    
     """
 
     asyncio.run(main(EXCHANGE))
