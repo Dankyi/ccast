@@ -96,8 +96,8 @@ async def main():
     exchange = await get_exchange()
 
     coin_pair_id = -1
-    # coin_pair = "ETH/BTC"
-    coin_pair = await get_coin_pair.main(exchange)
+    coin_pair = "ETH/BTC"
+    #  coin_pair = await get_coin_pair.main(exchange)  # Uncomment this to use the determine_best_coin.py script
 
     if coin_pair in exchange.symbols:
         coin_pair_id = exchange.symbols.index(coin_pair)
