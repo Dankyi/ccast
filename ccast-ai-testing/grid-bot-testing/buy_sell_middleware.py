@@ -53,6 +53,9 @@ if __name__ == "__main__":
     
     If you don't use Kraken (I did), then change ccxt.kraken(..) to whatever exchange you used.
     
+    Also, it's important you call the file my-api-keys.txt because I included that name in the .gitignore file, so you
+    won't ever be able to accidentally push your secret keys onto GitHub
+    
     """
 
     asyncio.run(main(EXCHANGE))
