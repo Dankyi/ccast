@@ -293,7 +293,7 @@ export default class Register extends Component {
         <p>
                 Already have an account? <br />
 
-                <li><Link to="/login">Sign In</Link></li>
+                <li><Link to="/ccast/login">Sign In</Link></li>
             </p>
       </div>
     );

@@ -167,7 +167,7 @@ return (
         <p>
                 Need an account? <br />
 
-                <li><Link to="/signup">Sign Up</Link></li>
+                <li><Link to="/ccast/signup">Sign Up</Link></li>
             </p>
       </div>
 );
