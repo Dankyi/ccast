@@ -19,19 +19,19 @@ async def get_balance(exchange):
     return balances
 
 
-async def buy(exchange):
+async def place_order(exchange):
     pass
 
 
-async def sell(exchange):
+async def close_order(exchange):
     pass
 
 
 async def main(exchange):
 
     await get_balance(exchange)
-    await buy(exchange)
-    await sell(exchange)
+    await place_order(exchange)
+    await close_order(exchange)
     await exchange.close()
 
 
