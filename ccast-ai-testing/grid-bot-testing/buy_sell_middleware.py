@@ -49,7 +49,7 @@ if __name__ == "__main__":
     paste it in, and then those two should be encrypted and stored in the user database.
     
     For the purposes of this test, store your keys in a text file called "my-api-keys.txt" on the same line, separated
-    by a comma, like this: key1,key2
+    by a comma, like this: apikey,secretkey
     
     If you don't use Kraken (I did), then change ccxt.kraken(..) to whatever exchange you used.
     
