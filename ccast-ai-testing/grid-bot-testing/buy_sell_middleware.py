@@ -2,12 +2,18 @@ import ccxt.async_support as ccxt
 import asyncio
 
 
-async def buy():
+async def buy(exchange):
     pass
 
 
-async def sell():
+async def sell(exchange):
     pass
+
+
+async def main(exchange):
+
+    await buy(exchange)
+    await exchange.close()
 
 
 if __name__ == "__main__":
@@ -23,8 +29,16 @@ if __name__ == "__main__":
     with open("my-api-keys.txt", "r") as api_key_file:
 
         api_keys = api_key_file.readlines()[0].split(",")
+
         API_CREDENTIALS["KEY"] = api_keys[0]
         API_CREDENTIALS["SECRET"] = api_keys[1]
+
+        api_keys = None
+
+    EXCHANGE = ccxt.kraken({"verbose": False, "enableRateLimit": True,
+                            "apiKey": API_CREDENTIALS["KEY"], "secret": API_CREDENTIALS["SECRET"]})
+
+    API_CREDENTIALS = None
 
     """
     
@@ -39,4 +53,5 @@ if __name__ == "__main__":
     
     """
 
-    pass
+    asyncio.run(main(EXCHANGE))
+
