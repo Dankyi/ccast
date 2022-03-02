@@ -18,10 +18,18 @@ async def get_exchange():
 async def find_coin(exchange):
 
     best_coin = ""
-    tightest_percentage = 100
+    tightest_difference = 100
+    difference_variation = 0.005  # 0.5% (0.005) by default
+
+    trading_volume = {}  # Trading Volume : [Low, High, Coin Pair]
+    raw_volumes = []
+    top_n = 100  # E.g., top 100 coins (by trading volume)
 
     PROGRESS = 0  # For debug purposes
     TOTAL_COIN_PAIRS = len(exchange.symbols)  # For debug purposes
+
+    print("Gathering coin pair data...")
+    print()
 
     for coin_pair in exchange.symbols:
 
@@ -30,20 +38,44 @@ async def find_coin(exchange):
         candle_stick_data = await exchange.fetch_ohlcv(exchange.symbols[coin_pair_index], "1d")
         candle_stick = candle_stick_data[-1]  # Gets yesterday's final candle stick
 
-        high_price = candle_stick[2]  # Yesterday's high and low
+        high_price = candle_stick[2]  # Yesterday's high, low and volume
         low_price = candle_stick[3]
+        volume = candle_stick[-1]
 
-        difference = 1.0 - (low_price / high_price)
+        if volume < 1:
+            continue  # There are some coins with 0 trading volume, we aren't interested in those
 
-        if difference < tightest_percentage:
-            best_coin = coin_pair
-            tightest_percentage = difference
+        trading_volume[volume] = [low_price, high_price, coin_pair]
+        raw_volumes.append(volume)
 
         PROGRESS += 1  # For debug purposes
         PERCENTAGE = (PROGRESS / TOTAL_COIN_PAIRS) * 100.0  # For debug purposes
-        print(f"Completed: {PROGRESS}/{TOTAL_COIN_PAIRS} -> " + str("%.2f" % PERCENTAGE) + "%")  # For debug purposes
+        print(f"Gathered: {PROGRESS}/{TOTAL_COIN_PAIRS} -> " + str("%.2f" % PERCENTAGE) + "%")  # For debug purposes
 
+    print()
+    print("Determining best coin pair from top " + str(top_n) + " coin pairs...")
+    print()
 
+    raw_volumes.sort(reverse=True)
+
+    for volume in raw_volumes[:top_n]:  # Top N coins by 24h trading volume
+
+        low_price = trading_volume[volume][0]
+        high_price = trading_volume[volume][1]
+
+        difference = 1.0 - (low_price / high_price)
+
+        if difference < difference_variation:
+            continue  # We want a bit of variance in the 24h difference, to indicate highs and lows - a completely
+            # flat price means you can never buy or sell!
+
+        if difference < tightest_difference:
+            best_coin = trading_volume[volume][2]
+            tightest_difference = difference
+
+        print("Current: " + best_coin + " -> " + str(tightest_difference))  # For debug purposes
+
+    print()  # For debug purposes
     return best_coin
 
 
