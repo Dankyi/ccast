@@ -10,13 +10,28 @@ async def get_exchange():
 
     print("Exchange: " + exchange.name)
     print("Rate Limit: " + str(exchange.rateLimit) + "ms")
+    print()
 
     return exchange
+
+
+def find_coin(exchange):
+
+    return ""
 
 
 async def main():
 
     exchange = await get_exchange()
+
+    s_time = stopwatch()
+    best_coin = find_coin(exchange)
+    e_time = stopwatch() - s_time
+    e_time /= 1_000_000
+
+    print("Best Coin: " + str(best_coin))
+    print("Time Taken to Determine: " + str(e_time))
+    print()
 
     await exchange.close()
 
