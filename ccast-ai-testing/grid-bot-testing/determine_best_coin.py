@@ -19,7 +19,7 @@ async def find_coin(exchange):
 
     best_coin = ""
     tightest_difference = 100
-    difference_variation = 0.005  # 0.5% (0.005) by default
+    difference_variation = 0.01  # 0.5% (0.005) by default
 
     trading_volume = {}  # Trading Volume : [Low, High, Coin Pair]
     raw_volumes = []
@@ -36,6 +36,11 @@ async def find_coin(exchange):
         coin_pair_index = exchange.symbols.index(coin_pair)
 
         candle_stick_data = await exchange.fetch_ohlcv(exchange.symbols[coin_pair_index], "1d")
+
+        if len(candle_stick_data) < 1:
+            continue  # For some strange reason I found a coin pair that didn't return the standard 720 length list,
+            #  it was 0...
+
         candle_stick = candle_stick_data[-1]  # Gets yesterday's final candle stick
 
         high_price = candle_stick[2]  # Yesterday's high, low and volume
