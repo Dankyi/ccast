@@ -2,6 +2,7 @@ from time import perf_counter_ns as stopwatch
 import matplotlib.pyplot as plt
 import ccxt.async_support as ccxt
 import asyncio
+import determine_best_coin as get_coin_pair
 
 
 async def get_exchange():
@@ -95,7 +96,8 @@ async def main():
     exchange = await get_exchange()
 
     coin_pair_id = -1
-    coin_pair = "ETH/BTC"
+    # coin_pair = "ETH/BTC"
+    coin_pair = await get_coin_pair.main(exchange)
 
     if coin_pair in exchange.symbols:
         coin_pair_id = exchange.symbols.index(coin_pair)
