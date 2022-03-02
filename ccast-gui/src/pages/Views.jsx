@@ -9,18 +9,17 @@ import authService from '../services/auth.service'
 const Views = () => {
   return (
   <Routes>
-    <Route path="/login" element={<Login />} />
-    <Route path="/signup" element={<SignUp />} />
+    <Route path="/ccast/login" element={<Login />} />
+    <Route path="/ccast/signup" element={<SignUp />} />
     
     /** Protected routes (Requires user sign in to view) */
     <Route element={<ProtectedViews />}>
-      <Route path="/" element={<Main />} />
-      <Route path="/main" element={<Main />} />    
-      <Route path="/profile" element={<Profile />} />
+      <Route path="/ccast/home" element={<Main />} />    
+      <Route path="/ccast/profile" element={<Profile />} />
       <Route index element={<Main />} />
     </Route>
 
-    <Route path="*" element={    <div><h1>ERROR 404: Page not found.</h1></div>}/>
+    <Route path="/*" element={    <div><h1>ERROR 404: Page not found.</h1></div>}/>
 </Routes>
   )
 }

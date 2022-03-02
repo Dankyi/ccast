@@ -29,17 +29,17 @@ const DefaultNavbar = () =>
     return (
         
         <Nav className="navbar">
-        <NavLogo to="/">
+        <NavLogo to="/ccast/home">
             <img src={logo} width={175} height={85} />
         </NavLogo>
 
         <Bars />
 
         <NavMenu>
-            <NavLink to="/" activeStyle>
+            <NavLink to="/ccast/home" activeStyle>
                 Home
             </NavLink>
-            <NavLink to="/login" activeStyle>
+            <NavLink to="/ccast/login" activeStyle>
                 Login
             </NavLink>
         </NavMenu>
@@ -54,17 +54,17 @@ const UserNavbar = () =>
     return (
         
         <Nav className="navbar">
-        <NavLogo to="/">
+        <NavLogo to="/ccast/home">
             <img src={logo} width={175} height={85} />
         </NavLogo>
 
         <Bars />
 
         <NavMenu>
-            <NavLink to="/" activeStyle>
+            <NavLink to="/ccast/home" activeStyle>
                 Home
             </NavLink>
-            <NavLink to="/profile" activeStyle>
+            <NavLink to="/ccast/profile" activeStyle>
                 Profile
             </NavLink>
             <NavBtn onClick={authService.logout}>
