@@ -2,6 +2,23 @@ import ccxt.async_support as ccxt
 import asyncio
 
 
+async def get_balance(exchange):
+
+    balances = {}
+
+    exchange_balance_dict = await exchange.fetch_balance()
+    exchange_balance_dict = exchange_balance_dict["info"]["result"]
+
+    for balance in exchange_balance_dict:
+
+        if float(exchange_balance_dict[balance]) > 0:
+            balances[balance] = float(exchange_balance_dict[balance])
+
+    print(balances)  # For debug purposes
+
+    return balances
+
+
 async def buy(exchange):
     pass
 
@@ -12,7 +29,9 @@ async def sell(exchange):
 
 async def main(exchange):
 
+    await get_balance(exchange)
     await buy(exchange)
+    await sell(exchange)
     await exchange.close()
 
 
