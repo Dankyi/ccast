@@ -1,5 +1,5 @@
 import React from 'react'
-import { Routes, Route, Outlet } from 'react-router-dom'
+import { Routes, Route, Outlet, Navigate } from 'react-router-dom'
 import Main from './Main'
 import Login from './Login'
 import SignUp from './SignUp'
@@ -10,7 +10,8 @@ const Views = () => {
   return (
   <Routes>
     <Route path="/ccast/login" element={<Login />} />
-    <Route path="/ccast/signup" element={<SignUp />} />
+    <Route path="/ccast/signup" element={<SignUp />} />      
+    <Route path="/ccast" element={<Navigate to="/ccast/home"/>}/>
     
     /** Protected routes (Requires user sign in to view) */
     <Route element={<ProtectedViews />}>
