@@ -20,6 +20,12 @@ async def get_balance(exchange):
     return balances
 
 
+async def get_order_book(exchange, coin_pair):
+
+    order_book = await exchange.fetch_order_book(coin_pair)
+    return {"BIDS": order_book["bids"], "ASKS": order_book["asks"]}
+
+
 async def place_order(exchange):
     pass
 
@@ -30,9 +36,14 @@ async def close_order(exchange):
 
 async def main(exchange):
 
-    await get_balance(exchange)
-    await place_order(exchange)
-    await close_order(exchange)
+    # await get_balance(exchange)
+    order_book = await get_order_book(exchange, "BTC/USDT")
+    # await place_order(exchange)
+    # await close_order(exchange)
+
+    print("Bids:", order_book["BIDS"])
+    print("Asks:", order_book["ASKS"])
+
     await exchange.close()
 
 
