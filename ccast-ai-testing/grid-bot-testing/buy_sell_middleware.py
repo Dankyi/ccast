@@ -1,4 +1,5 @@
 import ccxt.async_support as ccxt
+from platform import system as operating_system
 import asyncio
 
 
@@ -76,6 +77,9 @@ if __name__ == "__main__":
     won't ever be able to accidentally push your secret keys onto GitHub
     
     """
+
+    if operating_system().upper() == "WINDOWS":
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
     asyncio.run(main(EXCHANGE))
 
