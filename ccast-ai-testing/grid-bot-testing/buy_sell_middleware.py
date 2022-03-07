@@ -47,6 +47,9 @@ async def process_order(exchange, side, coin_pair):
 
     """
 
+    # ETH/BTC -> ETH is Base, BTC is Quote ... BTC/USDT -> BTC is Base, USDT is Quote ... BASE/QUOTE
+    base_currency = coin_pair.split("/")[0]
+
     if side:  # Buy
 
         pass
