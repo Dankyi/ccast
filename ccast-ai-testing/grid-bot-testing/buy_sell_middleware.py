@@ -30,7 +30,7 @@ async def get_order_book(exchange, coin_pair):
     return {"BIDS": order_book["bids"], "ASKS": order_book["asks"]}
 
 
-async def process_order(exchange, side):
+async def process_order(exchange, side, coin_pair):
 
     """
 
@@ -38,6 +38,12 @@ async def process_order(exchange, side):
 
     True (1) is analogous to "buy"
     False (0) is analogous to "sell"
+
+    I prefer to rename the "symbol" to "coin_pair", but this is the pair of currencies that you want to trade.
+    For example, ETH/BTC, or BTC/USDT, et al.
+
+    For BUYING, ETH/BTC means that you are buying an amount of ETH and paying for it with an amount of BTC.
+    For SELLING, ETH/BTC means you are selling an amount of ETH and receiving an amount of BTC.
 
     """
 
@@ -54,7 +60,7 @@ async def main(exchange):
 
     await get_balance(exchange)
     # await get_order_book(exchange, "ETH/BTC")
-    await process_order(exchange, True)
+    await process_order(exchange, True, "ETH/BTC")
     # await process_order(exchange, False)
 
     await exchange.close()
