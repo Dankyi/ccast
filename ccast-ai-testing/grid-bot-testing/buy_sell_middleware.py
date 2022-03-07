@@ -30,20 +30,32 @@ async def get_order_book(exchange, coin_pair):
     return {"BIDS": order_book["bids"], "ASKS": order_book["asks"]}
 
 
-async def place_order(exchange):
-    pass
+async def process_order(exchange, side):
 
+    """
 
-async def close_order(exchange):
-    pass
+    The "side" of an order refers to a buy or a sell, so I just use a boolean value to represent it.
+
+    True (1) is analogous to "buy"
+    False (0) is analogous to "sell"
+
+    """
+
+    if side:  # Buy
+
+        pass
+
+    else:  # Sell
+
+        pass
 
 
 async def main(exchange):
 
-    # await get_balance(exchange)
-    await get_order_book(exchange, "BTC/USDT")
-    # await place_order(exchange)
-    # await close_order(exchange)
+    await get_balance(exchange)
+    # await get_order_book(exchange, "ETH/BTC")
+    await process_order(exchange, True)
+    # await process_order(exchange, False)
 
     await exchange.close()
 
