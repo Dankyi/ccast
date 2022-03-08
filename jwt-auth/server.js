@@ -9,7 +9,7 @@ const app = express();
 
 // Define the port to send responses from.
 var corsOptions = {
-  origin: "http://localhost:8081"
+  origin: "http://selene.hud.ac.uk:8081"
 };
 
 const db = require("./app/models");
