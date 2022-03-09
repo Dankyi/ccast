@@ -29,7 +29,7 @@ class AIGridBot(Thread):
 
         order_middleware = buy_sell_middleware.Middleware(self.grid_amount)
 
-        #  "Buy": List of prices to buy cryptocurrency (lower grids)
+        #  "Buy": List of prices to buy cryptocurrency (lower grids) - and if they have already been crossed!
         #  "Sell": Single grid-point, this is the upper price in the grid where all the bought cryptocurrency is sold
         #
         grids = {"Buy": [], "Sell": 0.0}
@@ -37,7 +37,7 @@ class AIGridBot(Thread):
         current_price = await self.exchange.fetch_ticker(self.coin_pair)
         current_price = current_price.__getitem__("last")
 
-        grids["Buy"].append(current_price)
+        grids["Buy"].append([current_price, False])
         grid_step_price = current_price * (self.lower_grid_percentage / 100.0)
 
         grids["Sell"] = current_price * (1.0 + (self.profit_percentage / 100.0))
@@ -45,13 +45,25 @@ class AIGridBot(Thread):
         for _ in range(self.grid_amount - 1):
 
             current_price -= grid_step_price
-            grids["Buy"].append(current_price)
+            grids["Buy"].append([current_price, False])
 
         print("Lower (Buy): " + str(grids["Buy"]))
         print("Upper (Sell): " + str(grids["Sell"]))
+        print()
 
         while not self.stop_signal.is_set():  # When the backend calls stop() and sets the Event, the loop will break
-            pass
+
+            current_price = await self.exchange.fetch_ticker(self.coin_pair)
+            current_price = current_price.__getitem__("last")
+
+            for grid_price in grids["Buy"]:
+
+                if not grid_price[1]:
+                    if current_price <= grid_price[0]:
+                        await order_middleware.process_order(self.exchange, True, self.coin_pair)
+                        grid_price[1] = True
+
+            print(grids["Buy"])
 
         await self.__close_api()
 
