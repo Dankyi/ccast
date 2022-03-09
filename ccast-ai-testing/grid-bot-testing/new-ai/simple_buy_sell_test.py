@@ -24,7 +24,7 @@ async def main(exchange):
 
         async def simulate_buy_and_sell(buy_loops):
 
-            current_price = await exchange.fetch_ticker(exchange.symbols[coin_pair_id])
+            current_price = await exchange.fetch_ticker(coin_pair)
             current_price = current_price.__getitem__("last")
             profit_percentage = 1.00005  # 0.005% profit simulation
 
@@ -38,7 +38,7 @@ async def main(exchange):
 
             for _ in range(buy_loops):
 
-                await exchange_middleware.process_order(exchange, True, coin_pair, coin_pair_id)  # Do a buy!
+                await exchange_middleware.process_order(exchange, True, coin_pair)  # Do a buy!
 
                 balance = exchange_middleware.get_balance()
                 print("Buy: "
@@ -51,7 +51,7 @@ async def main(exchange):
             tick = 0
             while tick <= current_price * profit_percentage:  # Actually wait until price goes above threshold
 
-                tick = await exchange.fetch_ticker(exchange.symbols[coin_pair_id])
+                tick = await exchange.fetch_ticker(coin_pair)
                 tick = tick.__getitem__("last")
                 difference = abs(tick - (current_price * profit_percentage))
 
@@ -61,7 +61,7 @@ async def main(exchange):
 
             print()
 
-            await exchange_middleware.process_order(exchange, False, coin_pair, coin_pair_id)  # Do a sell!
+            await exchange_middleware.process_order(exchange, False, coin_pair)  # Do a sell!
 
             balance = exchange_middleware.get_balance()
             print("Sell (Ending Balance): "

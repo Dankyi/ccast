@@ -11,13 +11,13 @@ class Middleware:
 
         return [self.base, self.quote]  # Return the coin pair e.g., ETH/BTC
 
-    async def process_order(self, exchange, side, coin_pair, coin_pair_id):
+    async def process_order(self, exchange, side, coin_pair):
 
         if side:  # Buy
 
             self.quote -= self.quote_div_grids
 
-            base_quote_price = await exchange.fetch_ticker(exchange.symbols[coin_pair_id])
+            base_quote_price = await exchange.fetch_ticker(coin_pair)
             base_quote_price = base_quote_price.__getitem__("last")
 
             self.base += self.quote_div_grids / base_quote_price
