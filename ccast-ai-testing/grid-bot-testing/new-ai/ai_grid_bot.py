@@ -1,10 +1,7 @@
-import queue
-
 import ccxt.async_support as ccxt
 from platform import system as operating_system
 import asyncio
 from threading import Thread, Event
-from time import sleep
 
 import middleware_fake_money as middleware
 
