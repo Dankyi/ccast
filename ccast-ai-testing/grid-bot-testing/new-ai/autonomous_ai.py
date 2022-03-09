@@ -20,24 +20,38 @@ async def main(exchange):
 
     if coin_pair_id > -1:
 
-        exchange_middleware = middleware.Middleware()
+        exchange_middleware = middleware.Middleware(16)
         coin_pair_split = coin_pair.split("/")
 
-        async def simulate_buy_and_sell():
+        async def simulate_buy_and_sell(buy_loops):
 
             balance = exchange_middleware.get_balance()
-            print(coin_pair_split[0] + " -> " + str(balance[0]) + " | " + coin_pair_split[1] + " -> " + str(balance[1]))
-            await exchange_middleware.process_order(exchange, True, 16, coin_pair_id)  # Do a buy!
-            balance = exchange_middleware.get_balance()
-            print(coin_pair_split[0] + " -> " + str(balance[0]) + " | " + coin_pair_split[1] + " -> " + str(balance[1]))
+            print("Starting Balance: "
+                  + coin_pair_split[0] + " -> " + str(balance[0])
+                  + " | "
+                  + coin_pair_split[1] + " -> " + str(balance[1]))
+
+            for _ in range(buy_loops):
+
+                await exchange_middleware.process_order(exchange, True, coin_pair, coin_pair_id)  # Do a buy!
+
+                balance = exchange_middleware.get_balance()
+                print("Buy: "
+                      + coin_pair_split[0] + " -> " + str(balance[0])
+                      + " | "
+                      + coin_pair_split[1] + " -> " + str(balance[1]))
 
             sleep(5.0)  # Sleep for N seconds in lieu of actually waiting for the price to cross the threshold
 
-            await exchange_middleware.process_order(exchange, False, 16, coin_pair_id)  # Do a sell!
-            balance = exchange_middleware.get_balance()
-            print(coin_pair_split[0] + " -> " + str(balance[0]) + " | " + coin_pair_split[1] + " -> " + str(balance[1]))
+            await exchange_middleware.process_order(exchange, False, coin_pair, coin_pair_id)  # Do a sell!
 
-        await simulate_buy_and_sell()
+            balance = exchange_middleware.get_balance()
+            print("Sell: "
+                  + coin_pair_split[0] + " -> " + str(balance[0])
+                  + " | "
+                  + coin_pair_split[1] + " -> " + str(balance[1]))
+
+        await simulate_buy_and_sell(3)
 
     await exchange.close()
 
