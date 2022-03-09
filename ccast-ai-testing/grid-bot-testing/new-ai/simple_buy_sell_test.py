@@ -64,7 +64,7 @@ async def main(exchange):
             await exchange_middleware.process_order(exchange, False, coin_pair, coin_pair_id)  # Do a sell!
 
             balance = exchange_middleware.get_balance()
-            print("Sell: "
+            print("Sell (Ending Balance): "
                   + coin_pair_split[0] + " -> " + str(balance[0])
                   + " | "
                   + coin_pair_split[1] + " -> " + str(balance[1]))
