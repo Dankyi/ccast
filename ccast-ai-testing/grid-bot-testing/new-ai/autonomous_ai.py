@@ -77,6 +77,8 @@ async def main(exchange):
 if __name__ == "__main__":
 
     EXCHANGE = ccxt.binance({"verbose": False, "enableRateLimit": True})
+    #  For me, I will be using Kraken, but it's slow (fine for long term, which is the intended use), so Binance is good
+    #  for testing as it's a lot quicker. (Also good if you just have a Binance account for the real thing)
 
     if operating_system().upper() == "WINDOWS":
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
