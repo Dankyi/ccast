@@ -26,8 +26,8 @@ class Middleware:
 
             coin_pair_split = coin_pair.split("/")
 
-            base_dollar_pair = coin_pair_split[0] + "/" + "USD"
-            quote_dollar_pair = coin_pair_split[1] + "/" + "USD"
+            base_dollar_pair = coin_pair_split[0] + "/" + "USDT"
+            quote_dollar_pair = coin_pair_split[1] + "/" + "USDT"
 
             base_dollars = await exchange.fetch_ticker(base_dollar_pair)
             base_dollars = base_dollars.__getitem__("last")

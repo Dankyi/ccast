@@ -25,11 +25,17 @@ async def main(exchange):
 
         async def simulate_buy_and_sell(buy_loops):
 
+            current_price = await exchange.fetch_ticker(exchange.symbols[coin_pair_id])
+            current_price = current_price.__getitem__("last")
+            profit_percentage = 1.00005  # 0.005% profit simulation
+
             balance = exchange_middleware.get_balance()
             print("Starting Balance: "
                   + coin_pair_split[0] + " -> " + str(balance[0])
                   + " | "
                   + coin_pair_split[1] + " -> " + str(balance[1]))
+
+            print()
 
             for _ in range(buy_loops):
 
@@ -41,7 +47,20 @@ async def main(exchange):
                       + " | "
                       + coin_pair_split[1] + " -> " + str(balance[1]))
 
-            sleep(5.0)  # Sleep for N seconds in lieu of actually waiting for the price to cross the threshold
+            print()
+
+            tick = 0
+            while tick <= current_price * profit_percentage:  # Actually wait until price goes above threshold
+
+                tick = await exchange.fetch_ticker(exchange.symbols[coin_pair_id])
+                tick = tick.__getitem__("last")
+                difference = abs(tick - (current_price * profit_percentage))
+
+                print("Waiting For: " + str(current_price * profit_percentage)
+                      + " | Current Price: " + str(tick)
+                      + " | Difference: " + f'{difference:.10f}')
+
+            print()
 
             await exchange_middleware.process_order(exchange, False, coin_pair, coin_pair_id)  # Do a sell!
 
@@ -51,13 +70,13 @@ async def main(exchange):
                   + " | "
                   + coin_pair_split[1] + " -> " + str(balance[1]))
 
-        # await simulate_buy_and_sell(3)
+        await simulate_buy_and_sell(3)
 
     await exchange.close()
 
 if __name__ == "__main__":
 
-    EXCHANGE = ccxt.kraken({"verbose": False, "enableRateLimit": True})
+    EXCHANGE = ccxt.binance({"verbose": False, "enableRateLimit": True})
 
     if operating_system().upper() == "WINDOWS":
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
