@@ -71,8 +71,8 @@ class AIGridBot(Thread):
 
             if current_price >= grids["Sell"]:
                 await self.order_middleware.process_order(self.exchange, False, self.coin_pair)
-                print("Sold!")
                 self.stop()  # TODO: AI should re-create grids and continue buying/selling
+                print("Sold!")
 
             for grid_price in grids["Buy"]:
 
