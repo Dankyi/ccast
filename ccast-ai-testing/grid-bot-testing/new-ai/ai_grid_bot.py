@@ -14,6 +14,7 @@ class AIGridBot(Thread):
         self.daemon = True  # Lets Python forcefully destroy the thread on an unsafe shutdown, not preferred of course
         self.stop_signal = Event()
 
+        self.order_middleware = None
         self.exchange = exchange
         self.coin_pair = coin_pair
         self.lower_grid_percentage = lower_grid_percentage  # Price separation between lower grid prices
@@ -23,11 +24,10 @@ class AIGridBot(Thread):
     async def __start_ai(self):
 
         await self.exchange.load_markets(True)
+        self.order_middleware = buy_sell_middleware.Middleware(self.grid_amount)  # Will eventually be awaited
         await self.__run_ai()
 
     async def __run_ai(self):
-
-        order_middleware = buy_sell_middleware.Middleware(self.grid_amount)
 
         #  "Buy": List of prices to buy cryptocurrency (lower grids) - and if they have already been crossed!
         #  "Sell": Single grid-point, this is the upper price in the grid where all the bought cryptocurrency is sold
@@ -57,7 +57,7 @@ class AIGridBot(Thread):
             current_price = current_price.__getitem__("last")
 
             if current_price >= grids["Sell"]:
-                await order_middleware.process_order(self.exchange, False, self.coin_pair)
+                await self.order_middleware.process_order(self.exchange, False, self.coin_pair)
                 print("Sold!")
                 self.stop()  # TODO: AI should re-create grids and continue buying/selling
 
@@ -65,7 +65,7 @@ class AIGridBot(Thread):
 
                 if not grid_price[1]:
                     if current_price <= grid_price[0]:
-                        await order_middleware.process_order(self.exchange, True, self.coin_pair)
+                        await self.order_middleware.process_order(self.exchange, True, self.coin_pair)
                         grid_price[1] = True
                         print("Bought!")
 
