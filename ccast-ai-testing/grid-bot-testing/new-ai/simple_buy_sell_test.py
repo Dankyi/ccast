@@ -1,7 +1,6 @@
 import ccxt.async_support as ccxt
 from platform import system as operating_system
 import asyncio
-from time import sleep
 
 import middleware_fake_money as middleware
 
