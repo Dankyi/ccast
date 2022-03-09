@@ -18,7 +18,15 @@ async def main(exchange):
         print("Coin Pair: " + coin_pair + " cannot be found in the exchange!")
 
     if coin_pair_id > -1:
-        pass
+
+        exchange_middleware = middleware.Middleware()
+        coin_pair_split = coin_pair.split("/")
+
+        balance = exchange_middleware.get_balance()
+        print(coin_pair_split[0] + " -> " + str(balance[0]) + " | " + coin_pair_split[1] + " -> " + str(balance[1]))
+        await exchange_middleware.process_order(exchange, True, 16, coin_pair_id)
+        balance = exchange_middleware.get_balance()
+        print(coin_pair_split[0] + " -> " + str(balance[0]) + " | " + coin_pair_split[1] + " -> " + str(balance[1]))
 
     await exchange.close()
 

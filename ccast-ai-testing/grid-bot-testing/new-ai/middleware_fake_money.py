@@ -9,7 +9,7 @@ class Middleware:
 
     def get_balance(self):
 
-        return self.quote  # The quote currency is your balance, it's what you purchase "base" with and sell "base" to.
+        return [self.base, self.quote]  # Return the coin pair e.g., ETH/BTC
 
     async def process_order(self, exchange, side, grid_amount, coin_pair_id):
 
@@ -18,7 +18,11 @@ class Middleware:
             quote_div = self.quote / grid_amount
 
             self.quote -= quote_div
-            self.base += quote_div / (await exchange.fetch_ticker(exchange.symbols[coin_pair_id]).__getitem__("last"))
+
+            base_quote_price = await exchange.fetch_ticker(exchange.symbols[coin_pair_id])
+            base_quote_price = base_quote_price.__getitem__("last")
+
+            self.base += quote_div / base_quote_price
 
         else:  # Sell
             pass
