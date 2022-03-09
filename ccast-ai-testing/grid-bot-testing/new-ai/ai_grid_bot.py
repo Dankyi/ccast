@@ -52,7 +52,9 @@ if __name__ == "__main__":
     ai_bot = AIGridBot(EXCHANGE, "ETH/BTC", stop_signal)
     ai_bot.daemon = True
 
+    print("Press ENTER to STOP THE BOT!")
+    print()
     ai_bot.start()
-    sleep(5)
+    _ = input()
     stop_signal.set()
     ai_bot.join()
