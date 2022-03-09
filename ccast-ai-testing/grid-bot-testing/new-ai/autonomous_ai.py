@@ -1,6 +1,7 @@
 import ccxt.async_support as ccxt
 from platform import system as operating_system
 import asyncio
+from time import sleep
 
 import middleware_fake_money as middleware
 
@@ -22,11 +23,21 @@ async def main(exchange):
         exchange_middleware = middleware.Middleware()
         coin_pair_split = coin_pair.split("/")
 
-        balance = exchange_middleware.get_balance()
-        print(coin_pair_split[0] + " -> " + str(balance[0]) + " | " + coin_pair_split[1] + " -> " + str(balance[1]))
-        await exchange_middleware.process_order(exchange, True, 16, coin_pair_id)
-        balance = exchange_middleware.get_balance()
-        print(coin_pair_split[0] + " -> " + str(balance[0]) + " | " + coin_pair_split[1] + " -> " + str(balance[1]))
+        async def simulate_buy_and_sell():
+
+            balance = exchange_middleware.get_balance()
+            print(coin_pair_split[0] + " -> " + str(balance[0]) + " | " + coin_pair_split[1] + " -> " + str(balance[1]))
+            await exchange_middleware.process_order(exchange, True, 16, coin_pair_id)  # Do a buy!
+            balance = exchange_middleware.get_balance()
+            print(coin_pair_split[0] + " -> " + str(balance[0]) + " | " + coin_pair_split[1] + " -> " + str(balance[1]))
+
+            sleep(5.0)  # Sleep for N seconds in lieu of actually waiting for the price to cross the threshold
+
+            await exchange_middleware.process_order(exchange, False, 16, coin_pair_id)  # Do a sell!
+            balance = exchange_middleware.get_balance()
+            print(coin_pair_split[0] + " -> " + str(balance[0]) + " | " + coin_pair_split[1] + " -> " + str(balance[1]))
+
+        await simulate_buy_and_sell()
 
     await exchange.close()
 
