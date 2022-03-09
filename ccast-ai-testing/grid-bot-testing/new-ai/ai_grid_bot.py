@@ -56,14 +56,18 @@ class AIGridBot(Thread):
             current_price = await self.exchange.fetch_ticker(self.coin_pair)
             current_price = current_price.__getitem__("last")
 
+            if current_price >= grids["Sell"]:
+                await order_middleware.process_order(self.exchange, False, self.coin_pair)
+                print("Sold!")
+                self.stop()  # TODO: AI should re-create grids and continue buying/selling
+
             for grid_price in grids["Buy"]:
 
                 if not grid_price[1]:
                     if current_price <= grid_price[0]:
                         await order_middleware.process_order(self.exchange, True, self.coin_pair)
                         grid_price[1] = True
-
-            print(grids["Buy"])
+                        print("Bought!")
 
         await self.__close_api()
 
