@@ -21,6 +21,19 @@ class AIGridBot(Thread):
         self.profit_percentage = profit_percentage  # Price to sell at as a percentage increase of the current price
         self.grid_amount = grid_amount  # How many lower (buy) grids to create
 
+    def debug_get_balance(self):
+
+        #  A debug function to print the balance to the console, in the full program another backend script is...
+        #  ... responsible for this and piping it to the frontend.
+
+        coin_pair_split = self.coin_pair.split("/")
+        current_balance = self.order_middleware.get_balance()
+
+        print("Balance: "
+              + str(current_balance[0]) + " " + coin_pair_split[0]
+              + " | "
+              + str(current_balance[1]) + " " + coin_pair_split[1])
+
     async def __start_ai(self):
 
         await self.exchange.load_markets(True)
@@ -93,12 +106,19 @@ if __name__ == "__main__":
 
     ai_bot = AIGridBot(EXCHANGE, "ETH/BTC", 0.05, 0.05, 16)
 
-    print("Press ENTER to STOP THE BOT!")
+    print("Type B and then ENTER to see the current balance!")
+    print("Press ENTER with no input to STOP THE BOT!")
     print()
 
     ai_bot.start()
 
-    _ = input()
+    while True:
+
+        command = input()
+        if command.upper() == "B":
+            ai_bot.debug_get_balance()
+        else:
+            break
 
     ai_bot.stop()
 
