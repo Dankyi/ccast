@@ -38,4 +38,3 @@ class Middleware:
             self.quote += base_dollars / quote_dollars
 
             self.base = 0.0
-
