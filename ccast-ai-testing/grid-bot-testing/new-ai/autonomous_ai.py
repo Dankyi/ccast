@@ -51,7 +51,7 @@ async def main(exchange):
                   + " | "
                   + coin_pair_split[1] + " -> " + str(balance[1]))
 
-        await simulate_buy_and_sell(3)
+        # await simulate_buy_and_sell(3)
 
     await exchange.close()
 
