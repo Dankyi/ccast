@@ -104,7 +104,7 @@ if __name__ == "__main__":
 
     EXCHANGE = ccxt.binance({"verbose": False, "enableRateLimit": True})
 
-    ai_bot = AIGridBot(EXCHANGE, "ETH/BTC", 0.05, 0.05, 16)
+    ai_bot = AIGridBot(EXCHANGE, "ETH/BTC", 0.005, 0.005, 16)
 
     print("Type B and then ENTER to see the current balance!")
     print("Press ENTER with no input to STOP THE BOT!")
