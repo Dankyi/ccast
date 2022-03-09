@@ -8,10 +8,10 @@ import middleware_fake_money as middleware
 
 class AIGridBot(Thread):
 
-    def __init__(self, exchange, coin_pair, stop):
+    def __init__(self, exchange, coin_pair):
 
-        Thread.__init__(self)
-        self.stop_signal = stop
+        Thread.__init__(self)  # The class inherits the Thread class in Python
+        self.stop_signal = Event()
         self.exchange = exchange
         self.coin_pair = coin_pair
 
@@ -31,21 +31,23 @@ class AIGridBot(Thread):
 
         await self.exchange.close()
 
+    def stop(self):
+
+        self.stop_signal.set()
+
     def run(self):
 
         if operating_system().upper() == "WINDOWS":
             asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-        asyncio.run(self.__start_ai())
+        asyncio.run(self.__start_ai())  # The threads run method runs the private __start_ai() method in this class
 
 
 if __name__ == "__main__":
 
     EXCHANGE = ccxt.binance({"verbose": False, "enableRateLimit": True})
 
-    stop_signal = Event()
-
-    ai_bot = AIGridBot(EXCHANGE, "ETH/BTC", stop_signal)
+    ai_bot = AIGridBot(EXCHANGE, "ETH/BTC")
     ai_bot.daemon = True
 
     print("Press ENTER to STOP THE BOT!")
@@ -55,6 +57,6 @@ if __name__ == "__main__":
 
     _ = input()
 
-    stop_signal.set()
+    ai_bot.stop()
 
     ai_bot.join()
