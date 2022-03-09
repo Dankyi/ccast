@@ -2,6 +2,7 @@ import ccxt.async_support as ccxt
 from platform import system as operating_system
 import asyncio
 from threading import Thread, Event
+from time import sleep
 
 import middleware_fake_money as buy_sell_middleware
 
@@ -34,13 +35,15 @@ class AIGridBot(Thread):
               + " | "
               + str(current_balance[1]) + " " + coin_pair_split[1])
 
+        print()
+
     async def __start_ai(self):
 
         await self.exchange.load_markets(True)
         self.order_middleware = buy_sell_middleware.Middleware(self.grid_amount)  # Will eventually be awaited
         await self.__run_ai()
 
-    async def __run_ai(self):
+    async def create_grids(self):
 
         #  "Buy": List of prices to buy cryptocurrency (lower grids) - and if they have already been crossed!
         #  "Sell": Single grid-point, this is the upper price in the grid where all the bought cryptocurrency is sold
@@ -64,22 +67,47 @@ class AIGridBot(Thread):
         print("Upper (Sell): " + str(grids["Sell"]))
         print()
 
-        while not self.stop_signal.is_set():  # When the backend calls stop() and sets the Event, the loop will break
+        return grids
+
+    async def __run_ai(self):
+
+        grids = await self.create_grids()
+
+        while True:
 
             current_price = await self.exchange.fetch_ticker(self.coin_pair)
             current_price = current_price.__getitem__("last")
+            print(self.coin_pair + " Current Price: " + str(current_price))
 
             if current_price >= grids["Sell"]:
+
                 await self.order_middleware.process_order(self.exchange, False, self.coin_pair)
-                self.stop()  # TODO: AI should re-create grids and continue buying/selling
+
                 print("Sold!")
+
+                if self.stop_signal.is_set():
+                    break
+
+                self.debug_get_balance()
+
+                sleep(60.0)  # Pause between cycles in-case the market is suddenly dropping or spiking?
+
+                grids = await self.create_grids()
+                continue
+
+            if self.stop_signal.is_set():
+                print("Selling remaining order/s before stopping...")
+                continue
 
             for grid_price in grids["Buy"]:
 
                 if not grid_price[1]:
+
                     if current_price <= grid_price[0]:
+
                         await self.order_middleware.process_order(self.exchange, True, self.coin_pair)
                         grid_price[1] = True
+
                         print("Bought!")
 
         await self.__close_api()
@@ -115,11 +143,11 @@ if __name__ == "__main__":
     while True:
 
         command = input()
-        if command.upper() == "B":
+        if command.upper().startswith("B"):
             ai_bot.debug_get_balance()
         else:
             break
 
     ai_bot.stop()
-
     ai_bot.join()
+    ai_bot.debug_get_balance()
