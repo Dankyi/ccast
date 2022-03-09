@@ -11,7 +11,9 @@ class AIGridBot(Thread):
     def __init__(self, exchange, coin_pair):
 
         Thread.__init__(self)  # The class inherits the Thread class in Python
+        self.daemon = True  # Lets Python forcefully destroy the thread on an unsafe shutdown, not preferred of course
         self.stop_signal = Event()
+
         self.exchange = exchange
         self.coin_pair = coin_pair
 
@@ -48,7 +50,6 @@ if __name__ == "__main__":
     EXCHANGE = ccxt.binance({"verbose": False, "enableRateLimit": True})
 
     ai_bot = AIGridBot(EXCHANGE, "ETH/BTC")
-    ai_bot.daemon = True  # Lets Python forcefully destroy the thread on an unsafe shutdown, not preferred of course
 
     print("Press ENTER to STOP THE BOT!")
     print()
