@@ -22,16 +22,16 @@ class AIGridBot(Thread):
 
     async def __run_ai(self):
 
-        while not self.stop_signal.is_set():
+        while not self.stop_signal.is_set():  # When the backend calls stop() and sets the Event, the loop will break
             pass
 
-        await self.__stop_ai()
+        await self.__close_api()
 
-    async def __stop_ai(self):
+    async def __close_api(self):
 
-        await self.exchange.close()
+        await self.exchange.close()  # This can take a second, so the backend needs to utilise .join() to wait for this
 
-    def stop(self):
+    def stop(self):  # Backend calls this method when the user presses the stop button in the frontend
 
         self.stop_signal.set()
 
