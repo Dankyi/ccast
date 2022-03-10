@@ -20,7 +20,11 @@ class Middleware:
             base_quote_price = await exchange.fetch_ticker(coin_pair)
             base_quote_price = base_quote_price.__getitem__("last")
 
-            self.base += self.quote_div_grids / base_quote_price
+            amount = self.quote_div_grids / base_quote_price
+            fee = float(exchange.calculate_fee(coin_pair, "market", "buy", amount, base_quote_price)["cost"])
+            amount -= fee
+
+            self.base += amount
 
         else:  # Sell
 
