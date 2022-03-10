@@ -44,21 +44,20 @@ class AIGridBot(Thread):
         buy_fee_percentage = float(self.exchange.calculate_fee(self.coin_pair, "market", "buy", 0, 0)["rate"]) * 100.0
         sell_fee_percentage = float(self.exchange.calculate_fee(self.coin_pair, "market", "sell", 0, 0)["rate"]) * 100.0
 
-        print("NOTE: Exchange fees of "
-              + str(buy_fee_percentage) + "%"
-              + " and "
-              + str(sell_fee_percentage) + "%"
-              + " have been added onto the BUY grids and SELL grid respectively!")
+        print("Buying Fee (Lower Grids): " + str(buy_fee_percentage) + "% * " + str(self.grid_amount))
+        print("Selling Fee (Upper Grid): " + str(sell_fee_percentage) + "%")
+        print("These have been added on to the profit percentage (Upper Sell Grid) automatically!")
+        print()
 
-        self.lower_grid_percentage += buy_fee_percentage
+        self.profit_percentage += (buy_fee_percentage * self.grid_amount)
         self.profit_percentage += sell_fee_percentage
 
-        print("Lower (Buy) Grids New Percentage: " + str(self.lower_grid_percentage) + "%")
         print("Upper (Sell) Grid New Percentage: " + str(self.profit_percentage) + "%")
 
         print()
 
         self.order_middleware = buy_sell_middleware.Middleware(self.grid_amount)  # Will eventually be awaited
+
         await self.__run_ai()
 
     async def create_grids(self):
@@ -150,7 +149,7 @@ if __name__ == "__main__":
 
     EXCHANGE = ccxt.binance({"verbose": False, "enableRateLimit": True})
 
-    ai_bot = AIGridBot(EXCHANGE, "ETH/BTC", 0.005, 0.005, 16)
+    ai_bot = AIGridBot(EXCHANGE, "ETH/BTC", 0.005, 1.0, 16)
 
     print("Type B and then ENTER to see the current balance!")
     print("Press ENTER with no input to STOP THE BOT!")
