@@ -40,6 +40,24 @@ class AIGridBot(Thread):
     async def __start_ai(self):
 
         await self.exchange.load_markets(True)
+
+        buy_fee_percentage = float(self.exchange.calculate_fee(self.coin_pair, "market", "buy", 0, 0)["rate"]) * 100.0
+        sell_fee_percentage = float(self.exchange.calculate_fee(self.coin_pair, "market", "sell", 0, 0)["rate"]) * 100.0
+
+        print("NOTE: Exchange fees of "
+              + str(buy_fee_percentage) + "%"
+              + " and "
+              + str(sell_fee_percentage) + "%"
+              + " have been added onto the BUY grids and SELL grid respectively!")
+
+        self.lower_grid_percentage += buy_fee_percentage
+        self.profit_percentage += sell_fee_percentage
+
+        print("Lower (Buy) Grids New Percentage: " + str(self.lower_grid_percentage) + "%")
+        print("Upper (Sell) Grid New Percentage: " + str(self.profit_percentage) + "%")
+
+        print()
+
         self.order_middleware = buy_sell_middleware.Middleware(self.grid_amount)  # Will eventually be awaited
         await self.__run_ai()
 
