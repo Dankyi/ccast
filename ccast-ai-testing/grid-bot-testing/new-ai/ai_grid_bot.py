@@ -92,7 +92,11 @@ class AIGridBot(Thread):
             if current_price >= grids["Sell"]:
 
                 if not bought:
-                    continue  # TODO: Maybe re-evaluate grids if this happens n times?
+
+                    if self.stop_signal.is_set():
+                        break
+                    else:
+                        continue  # TODO: Maybe re-evaluate grids if this happens n times?
 
                 bought = False
 
@@ -149,7 +153,7 @@ if __name__ == "__main__":
 
     EXCHANGE = ccxt.binance({"verbose": False, "enableRateLimit": True})
 
-    ai_bot = AIGridBot(EXCHANGE, "ETH/BTC", 0.005, 1.0, 16)
+    ai_bot = AIGridBot(EXCHANGE, "ETH/BTC", 0.005, 0.005, 16)
 
     print("Type B and then ENTER to see the current balance!")
     print("Press ENTER with no input to STOP THE BOT!")
