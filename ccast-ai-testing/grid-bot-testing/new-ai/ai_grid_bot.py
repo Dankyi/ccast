@@ -39,24 +39,10 @@ class AIGridBot(Thread):
 
     async def __start_ai(self):
 
+        print("Fees will be taken into account automatically during grid creation!")
+        print()
+
         await self.exchange.load_markets(True)
-
-        # buy_fee_percentage = float(self.exchange.calculate_fee(self.coin_pair, "market", "buy", 0, 0)["rate"]) * 100.0
-        # sell_fee_percentage = float(self.exchange.calculate_fee(self.coin_pair, "market", "sell", 0, 0)["rate"]) * 100.0
-        #
-        # print("Buying Fee (Lower Grids): " + str(buy_fee_percentage) + "% * " + str(self.grid_amount))
-        # print("Selling Fee (Upper Grid): " + str(sell_fee_percentage) + "%")
-        # print("These have been added on to the profit percentage (Upper Sell Grid) automatically!")
-        # print()
-        #
-        # self.profit_percentage += (buy_fee_percentage * self.grid_amount)
-        # self.profit_percentage += sell_fee_percentage
-        #
-        # print("Upper (Sell) Grid New Percentage: " + str(self.profit_percentage) + "%")
-        #
-        # print()
-
-        print("Fees will be taken into account automatically upon grid creation!")
 
         self.order_middleware = buy_sell_middleware.Middleware(self.grid_amount)  # Will eventually be awaited
 
