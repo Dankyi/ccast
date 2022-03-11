@@ -41,20 +41,22 @@ class AIGridBot(Thread):
 
         await self.exchange.load_markets(True)
 
-        buy_fee_percentage = float(self.exchange.calculate_fee(self.coin_pair, "market", "buy", 0, 0)["rate"]) * 100.0
-        sell_fee_percentage = float(self.exchange.calculate_fee(self.coin_pair, "market", "sell", 0, 0)["rate"]) * 100.0
+        # buy_fee_percentage = float(self.exchange.calculate_fee(self.coin_pair, "market", "buy", 0, 0)["rate"]) * 100.0
+        # sell_fee_percentage = float(self.exchange.calculate_fee(self.coin_pair, "market", "sell", 0, 0)["rate"]) * 100.0
+        #
+        # print("Buying Fee (Lower Grids): " + str(buy_fee_percentage) + "% * " + str(self.grid_amount))
+        # print("Selling Fee (Upper Grid): " + str(sell_fee_percentage) + "%")
+        # print("These have been added on to the profit percentage (Upper Sell Grid) automatically!")
+        # print()
+        #
+        # self.profit_percentage += (buy_fee_percentage * self.grid_amount)
+        # self.profit_percentage += sell_fee_percentage
+        #
+        # print("Upper (Sell) Grid New Percentage: " + str(self.profit_percentage) + "%")
+        #
+        # print()
 
-        print("Buying Fee (Lower Grids): " + str(buy_fee_percentage) + "% * " + str(self.grid_amount))
-        print("Selling Fee (Upper Grid): " + str(sell_fee_percentage) + "%")
-        print("These have been added on to the profit percentage (Upper Sell Grid) automatically!")
-        print()
-
-        self.profit_percentage += (buy_fee_percentage * self.grid_amount)
-        self.profit_percentage += sell_fee_percentage
-
-        print("Upper (Sell) Grid New Percentage: " + str(self.profit_percentage) + "%")
-
-        print()
+        print("Fees will be taken into account automatically upon grid creation!")
 
         self.order_middleware = buy_sell_middleware.Middleware(self.grid_amount)  # Will eventually be awaited
 
@@ -70,15 +72,19 @@ class AIGridBot(Thread):
         current_price = await self.exchange.fetch_ticker(self.coin_pair)
         current_price = current_price.__getitem__("last")
 
-        grids["Buy"].append([current_price, False])
+        buy_fee = self.order_middleware.get_fee(self.exchange, self.coin_pair, "buy")
+        sell_fee = self.order_middleware.get_fee(self.exchange, self.coin_pair, "sell")
+
         grid_step_price = current_price * (self.lower_grid_percentage / 100.0)
 
         grids["Sell"] = current_price * (1.0 + (self.profit_percentage / 100.0))
+        grids["Sell"] += (grids["Sell"] * sell_fee)
 
-        for _ in range(self.grid_amount - 1):
+        for _ in range(self.grid_amount):
 
-            current_price -= grid_step_price
+            current_price -= (current_price * buy_fee)
             grids["Buy"].append([current_price, False])
+            current_price -= grid_step_price
 
         print("Lower (Buy): " + str(grids["Buy"]))
         print("Upper (Sell): " + str(grids["Sell"]))
@@ -89,6 +95,7 @@ class AIGridBot(Thread):
     async def __run_ai(self):
 
         grids = await self.create_grids()
+        bought = False
 
         while True:
 
@@ -97,6 +104,11 @@ class AIGridBot(Thread):
             print(self.coin_pair + " Current Price: " + str(current_price))
 
             if current_price >= grids["Sell"]:
+
+                if not bought:
+                    continue  # TODO: Maybe re-evaluate grids if this happens n times?
+
+                bought = False
 
                 await self.order_middleware.process_order(self.exchange, False, self.coin_pair)
 
@@ -124,6 +136,8 @@ class AIGridBot(Thread):
 
                         await self.order_middleware.process_order(self.exchange, True, self.coin_pair)
                         grid_price[1] = True
+
+                        bought = True
 
                         print("Bought!")
 
