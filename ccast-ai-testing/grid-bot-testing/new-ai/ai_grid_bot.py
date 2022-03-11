@@ -115,8 +115,12 @@ class AIGridBot(Thread):
                 continue
 
             if self.stop_signal.is_set():
-                print("Selling remaining order/s before stopping...")
-                continue
+
+                if not bought:
+                    break
+                else:
+                    print("Selling remaining order/s before stopping...")
+                    continue
 
             for grid_price in grids["Buy"]:
 
