@@ -36,8 +36,6 @@ class Middleware:
             base_quote_price = base_quote_price.__getitem__("last")
 
             amount = self.quote_div_grids / base_quote_price
-            fee = self.get_fee(exchange, coin_pair, "buy")
-            amount -= (amount * fee)
 
             self.base += amount
 
@@ -56,8 +54,6 @@ class Middleware:
             quote_dollars = quote_dollars.__getitem__("last")
 
             quote_amount = base_dollars / quote_dollars
-            fee = self.get_fee(exchange, coin_pair, "sell")
-            quote_amount -= (quote_amount * fee)
 
             self.quote += quote_amount
             self.base = 0.0
