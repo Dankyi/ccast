@@ -11,6 +11,21 @@ class Middleware:
 
         return [self.base, self.quote]  # Return the coin pair e.g., ETH/BTC
 
+    @staticmethod
+    def get_fee(exchange, coin_pair, side):
+
+        fee_dict = exchange.calculate_fee(coin_pair, "market", side, 0, 0)
+        fee = float(fee_dict["rate"])
+
+        coin_pair_split = coin_pair.split("/")
+
+        if side.upper() == "BUY" and coin_pair_split[0] != fee_dict["currency"]:
+            pass  # TODO: Convert fee amount to base currency
+        elif side.upper() == "SELL" and coin_pair_split[1] != fee_dict["currency"]:
+            pass  # TODO: Convert fee amount to quote currency
+
+        return fee
+
     async def process_order(self, exchange, side, coin_pair):
 
         if side:  # Buy
@@ -21,8 +36,8 @@ class Middleware:
             base_quote_price = base_quote_price.__getitem__("last")
 
             amount = self.quote_div_grids / base_quote_price
-            fee = float(exchange.calculate_fee(coin_pair, "market", "buy", amount, base_quote_price)["cost"])
-            amount -= fee
+            fee = self.get_fee(exchange, coin_pair, "buy")
+            amount -= (amount * fee)
 
             self.base += amount
 
@@ -41,8 +56,8 @@ class Middleware:
             quote_dollars = quote_dollars.__getitem__("last")
 
             quote_amount = base_dollars / quote_dollars
-            fee = float(exchange.calculate_fee(coin_pair, "market", "sell", self.base, quote_amount)["cost"])
-            quote_amount -= fee
+            fee = self.get_fee(exchange, coin_pair, "sell")
+            quote_amount -= (quote_amount * fee)
 
             self.quote += quote_amount
             self.base = 0.0
