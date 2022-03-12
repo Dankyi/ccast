@@ -11,7 +11,7 @@ import './AuthForm.css';
 export default function Login() {
 
 // States for registration
-const [username, setUsername] = useState('');
+const [email, setEmail] = useState('');
 const [password, setPassword] = useState('');
 const [loading, setLoading] = useState(false);
 const [message, setMessage] = useState('');
@@ -23,7 +23,7 @@ const [error, setError] = useState(false);
 
 // Handling the email change
 const handleEmail = (e) => {
-	setUsername(e.target.value);
+	setEmail(e.target.value);
 	setSubmitted(false);
 };
 
@@ -48,7 +48,7 @@ const handleSubmit = (e) => {
 
 
     // If the login is successful:
-    AuthService.login(username, password).then(
+    AuthService.login(email, password).then(
       () => {
         navigate("/");
         window.location.reload(false);
@@ -114,12 +114,12 @@ return (
             
           >
             <div className="form-group">
-              <label htmlFor="username">Username</label>
+              <label htmlFor="email">Email</label>
               <Input
                 type="text"
                 className="form-control"
-                name="username"
-                value={username}
+                name="email"
+                value={email}
                 onChange={handleEmail}
                 validations={[required]}
               />
