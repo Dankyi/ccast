@@ -1,2 +1,2 @@
-class TransactionMiddleware:
+class Middleware:
     pass
