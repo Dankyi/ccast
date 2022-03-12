@@ -1,4 +1,3 @@
-import ccxt.async_support as ccxt
 from platform import system as operating_system
 import asyncio
 from threading import Thread, Event
@@ -151,28 +150,3 @@ class AIGridBot(Thread):
             asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
         asyncio.run(self.__start_ai())  # The threads run method runs the private __start_ai() method in this class
-
-
-if __name__ == "__main__":
-
-    EXCHANGE = ccxt.binance({"verbose": False, "enableRateLimit": True})
-
-    ai_bot = AIGridBot(EXCHANGE, "ETH/BTC", 0.005, 0.005, 16)
-
-    print("Type B and then ENTER to see the current balance!")
-    print("Press ENTER with no input to STOP THE BOT!")
-    print()
-
-    ai_bot.start()
-
-    while True:
-
-        command = input()
-        if command.upper().startswith("B"):
-            ai_bot.debug_get_balance()
-        else:
-            break
-
-    ai_bot.stop()
-    ai_bot.join()
-    ai_bot.debug_get_balance()
