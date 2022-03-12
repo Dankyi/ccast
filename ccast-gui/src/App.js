@@ -1,25 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
+import { BrowserRouter } from 'react-router-dom'
+
+import NavBar from './components/NavBar';
+import "bootstrap/dist/css/bootstrap.min.css";
+import Views from './pages/Views'
 
 
-function App() {
-  const [currentTime, setCurrentTime] = useState(0);
 
-  useEffect(() => {
-    fetch('/time').then(res => res.json()).then(data => {
-      setCurrentTime(data.time);
-    });
-  }, []);
+function App(){
 
-  return (
-    <div className="App">
-      <header className="App-header">
+    const [currentTime, setCurrentTime] = useState(0);
+  
+    useEffect(() => {
+      fetch('/api/time').then(res => res.json()).then(data => {
+        setCurrentTime(data.time);
+      });
+    }, []);
 
-        ... no changes in this part ...
-
-        <p>The current time is {currentTime}.</p>
-      </header>
-    </div>
-  );
+        return (
+                <BrowserRouter>
+                <NavBar />
+                <p>The current time is {currentTime}.</p>
+                <Views/>
+                </BrowserRouter>
+        );
+    
 }
 
-export default App;
+export default App
