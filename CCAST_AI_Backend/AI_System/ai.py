@@ -8,6 +8,18 @@ class AIGridBot(Thread):
 
     def __init__(self, exchange, money_system, coin_pair, lower_grid_percentage, profit_percentage, grid_amount):
 
+        """
+
+        The constructor for the AI class.
+
+        :param exchange: The exchange object
+        :param money_system: The middleware object, can be the fake money or real money one
+        :param coin_pair: The coin-pair to trade, e.g., ETH/BTC
+        :param lower_grid_percentage: The price separation between each buy grid, expressed as a percentage
+        :param profit_percentage: The price that the bot will sell at, as a percentage above the current price
+        :param grid_amount: The amount of lower (buy) grids to create
+        """
+
         Thread.__init__(self)  # The class inherits the Thread class in Python
         self.daemon = True  # Lets Python forcefully destroy the thread on an unsafe shutdown, not preferred of course
         self.stop_signal = Event()
@@ -21,8 +33,11 @@ class AIGridBot(Thread):
 
     def debug_get_balance(self):
 
-        #  A debug function to print the balance to the console, in the full program another backend script is...
-        #  ... responsible for this and piping it to the frontend.
+        """
+
+        A method to obtain the current balance of the user, currently a debug method for testing
+
+        """
 
         coin_pair_split = self.coin_pair.split("/")
         current_balance = self.order_middleware.get_balance()
@@ -36,6 +51,13 @@ class AIGridBot(Thread):
 
     async def __start_ai(self):
 
+        """
+
+        The run() method for the Thread starts this private method. It loads the markets from the exchange and then
+        starts up the AI processing.
+
+        """
+
         print("Fees will be taken into account automatically during grid creation!")
         print()
 
@@ -44,6 +66,20 @@ class AIGridBot(Thread):
         await self.__run_ai()
 
     async def create_grids(self):
+
+        """
+
+        For this particular AI implementation, this method creates the grids that are used to buy cryptocurrency at
+        various prices. It's ran every time a sell occurs.
+
+        Fee's are taken into account here. The grid percentage will have the fee taken off it to negate it, and the
+        sell grid will have the fee added onto it for the same effect.
+
+        :return: A dictionary with two keys. The "Buy" key holds an array of arrays, where each index is a two indexed
+        array of a buy price and whether or not it was triggered yet. The "Sell" key holds a single value, which is the
+        sell "grid" price.
+
+        """
 
         #  "Buy": List of prices to buy cryptocurrency (lower grids) - and if they have already been crossed!
         #  "Sell": Single grid-point, this is the upper price in the grid where all the bought cryptocurrency is sold
@@ -74,6 +110,16 @@ class AIGridBot(Thread):
         return grids
 
     async def __run_ai(self):
+
+        """
+
+        The "main method" of the AI so-to-speak. Runs in a permanent while-loop and checks an Event object every loop.
+
+        The Event object is a method of thread synchronisation in Python: if the object is NOT set, the AI will continue
+        looping (i.e., doing its buying and selling et al.) but if the object IS set then the AI will sell off its
+        remaining stock (if applicable) and then stop. An external class triggers this.
+
+        """
 
         grids = await self.create_grids()
         bought = False
@@ -134,13 +180,35 @@ class AIGridBot(Thread):
 
     async def __close_api(self):
 
+        """
+
+        If the AI is stopped, the final thing it does is go in here and close the exchange, as per the requirement of
+        the CCXT library.
+
+        """
+
         await self.exchange.close()  # This can take a second, so the backend needs to utilise .join() to wait for this
 
     def stop(self):  # Backend calls this method when the user presses the stop button in the frontend
 
+        """
+
+        Some other class (e.g., the Flask backend) calls this method of the AI object, triggering it to stop.
+
+        """
+
         self.stop_signal.set()
 
     def run(self):
+
+        """
+
+        The main method of the Thread class in Python, over-ridden to execute the AI processing.
+
+        It also has a little if statement because Windows is special and will throw exceptions if it uses the default
+        event loop policy.
+
+        """
 
         if operating_system().upper() == "WINDOWS":
             asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
