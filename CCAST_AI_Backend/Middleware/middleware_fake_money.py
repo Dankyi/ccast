@@ -15,16 +15,7 @@ class Middleware:
     def get_fee(exchange, coin_pair, side):
 
         fee_dict = exchange.calculate_fee(coin_pair, "market", side, 0, 0)
-        fee = float(fee_dict["rate"])
-
-        coin_pair_split = coin_pair.split("/")
-
-        if side.upper() == "BUY" and coin_pair_split[0] != fee_dict["currency"]:
-            pass  # TODO: Convert fee amount to base currency
-        elif side.upper() == "SELL" and coin_pair_split[1] != fee_dict["currency"]:
-            pass  # TODO: Convert fee amount to quote currency
-
-        return fee
+        return float(fee_dict["rate"])
 
     async def process_order(self, exchange, side, coin_pair):
 
