@@ -3,14 +3,19 @@ import axios from "axios";
 const API_URL = "http://127.0.0.1:5000/users/";
 
 class AuthService {
-  login(username, password) {
+  login(email, password) {
+    console.log("Sending Login Request.")
+
+    var userData = {
+      "email": email,
+      "password" : password
+    }
+    
     return axios
-      .post(API_URL + "login", {
-        username,
-        password
-      })
-      .then(response => {
-        if (response.data.accessToken) {
+      .post(API_URL + "login", userData)
+      .then( (response) => {
+        console.log("Within the .then() method")
+        if (response.data.data.accessToken) {
           localStorage.setItem("user", JSON.stringify(response.data));
         }
 
@@ -20,13 +25,14 @@ class AuthService {
 
   logout() {
     localStorage.removeItem("user");
+    window.location.reload(false);
   }
 
-  register(username, email, password) {
+  register(name, email, password) {
     console.log("Sending Registration Request.")
 
     var userData = {
-      "name": username,
+      "name": name,
       "email": email,
       "password" : password
     }
@@ -39,7 +45,7 @@ class AuthService {
   }
 
   getCurrentUser() {
-    return JSON.parse(localStorage.getItem('user'));;
+    return JSON.parse(localStorage.getItem('user'));
   }
 
   isLoggedIn(){

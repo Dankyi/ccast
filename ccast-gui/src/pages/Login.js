@@ -50,8 +50,9 @@ const handleSubmit = (e) => {
     // If the login is successful:
     AuthService.login(email, password).then(
       () => {
-        navigate("/");
+        navigate("/ccast/home");
         window.location.reload(false);
+        
       },
 
       // If there was an error, get the message and set the message in the state.
@@ -62,7 +63,7 @@ const handleSubmit = (e) => {
             error.response.data.message) ||
           error.message ||
           error.toString();
-
+ 
         setLoading(false);
         setMessage(resMessage);
         errorMessage();

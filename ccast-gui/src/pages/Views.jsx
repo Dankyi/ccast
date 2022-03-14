@@ -11,7 +11,9 @@ const Views = () => {
   <Routes>
     <Route path="/ccast/login" element={<Login />} />
     <Route path="/ccast/signup" element={<SignUp />} />      
-    <Route path="/ccast" element={<Navigate to="/ccast/home"/>}/>
+    <Route path="/ccast" element={<Navigate to="/ccast/home"/>}/>      
+    
+    
     
     /** Protected routes (Requires user sign in to view) */
     <Route element={<ProtectedViews />}>

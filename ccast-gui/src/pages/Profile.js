@@ -6,18 +6,26 @@ export default class Profile extends Component {
     super(props);
 
     this.state = {
-      currentUser: AuthService.getCurrentUser()
+      currentUser: AuthService.getCurrentUser().data
     };
   }
 
   render() {
     const { currentUser } = this.state;
+    console.log("CurrentUser = ", currentUser)
 
+    if (currentUser == null) return(
+      <div className='container'>
+            <h1> No Profile Information in local storage. </h1>
+            <p> How did you get here? </p>
+        </div>
+    );
+    debugger;
     return (
       <div className="container">
         <header className="jumbotron">
           <h3>
-            <strong>{currentUser.username}</strong> Profile
+            <strong>{currentUser.name}</strong> Profile
           </h3>
         </header>
         <p>
@@ -32,12 +40,7 @@ export default class Profile extends Component {
         <p>
           <strong>Email:</strong>{" "}
           {currentUser.email}
-        </p>
-        <strong>Authorities:</strong>
-        <ul>
-          {currentUser.roles &&
-            currentUser.roles.map((role, index) => <li key={index}>{role}</li>)}
-        </ul>
+        </p>        
       </div>
     );
   }

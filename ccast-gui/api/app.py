@@ -93,7 +93,12 @@ def login():
                 )
                 return {
                     "message": "Successfully fetched auth token",
-                    "data": user.email
+                    "data": {
+                        "id": user.id,
+                        "name": user.name,
+                        "email": user.email,
+                        "accessToken": user.token
+                    }
                 }
             except Exception as e:
                 return {
@@ -101,7 +106,7 @@ def login():
                     "message": str(e)
                 }, 500
         return {
-            "message": "Error fetching auth token!, invalid email or password",
+            "message": "Invalid email or password, Authentication failed.",
             "data": None,
             "error": "Unauthorized"
         }, 404
