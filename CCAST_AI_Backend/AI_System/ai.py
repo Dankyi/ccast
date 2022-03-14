@@ -3,18 +3,16 @@ import asyncio
 from threading import Thread, Event
 from time import sleep
 
-import CCAST_AI_Backend.Middleware.middleware_fake_money as transaction_middleware
-
 
 class AIGridBot(Thread):
 
-    def __init__(self, exchange, coin_pair, lower_grid_percentage, profit_percentage, grid_amount):
+    def __init__(self, exchange, money_system, coin_pair, lower_grid_percentage, profit_percentage, grid_amount):
 
         Thread.__init__(self)  # The class inherits the Thread class in Python
         self.daemon = True  # Lets Python forcefully destroy the thread on an unsafe shutdown, not preferred of course
         self.stop_signal = Event()
 
-        self.order_middleware = None
+        self.order_middleware = money_system.Middleware(grid_amount)
         self.exchange = exchange
         self.coin_pair = coin_pair
         self.lower_grid_percentage = lower_grid_percentage  # Price separation between lower grid prices
@@ -42,8 +40,6 @@ class AIGridBot(Thread):
         print()
 
         await self.exchange.load_markets(True)
-
-        self.order_middleware = transaction_middleware.Middleware(self.grid_amount)  # Will eventually be awaited
 
         await self.__run_ai()
 
