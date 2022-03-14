@@ -9,7 +9,7 @@ class Middleware:
 
     def get_balance(self):
 
-        return [self.base, self.quote]  # Return the coin pair funds e.g., ETH/BTC as [0.0, 1.0]
+        return [self.base, self.quote]  # Return the coin pair funds e.g., ETH/BTC as 0.0/1.0
 
     @staticmethod
     def get_fee(exchange, coin_pair, side):
