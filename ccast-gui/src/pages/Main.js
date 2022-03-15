@@ -1,15 +1,40 @@
-import React, {useEffect, useState} from 'react'
+import React, {Component, useEffect, useState} from 'react'
+import aiService from '../services/ai.service'
+import AuthService from "../services/auth.service";
 
 import './Main.css'
 
-function Main() {
+export default class Main extends Component {
+    constructor(props) {
+      super(props);
+  
+      this.state = {
+        currentUser: AuthService.getCurrentUser().data,
+        
+        // Three states for trading: Idle, Dummy, and Live
+        trading: 'Idle'
+      };
+    }
+  
+    render() {
+      const { currentUser } = this.state;
+      const { trading } = this.state;
 
-    // Three states for trading: Idle, Dummy, and Live
-    const [trading, setTrading] = useState('Idle')
-
-    const startReal = (e) => { setTrading('Live') }
-    const startFake = (e) => { setTrading('Dummy') }
-    const stopTrading = (e) => { setTrading('Idle') }
+    const startReal = (e) => { 
+        this.setState({trading: 'Live'})
+        var returned = aiService.startReal(currentUser.id, currentUser.accessToken);      
+        console.log(returned)  
+    }
+    const startFake = (e) => { 
+        this.setState({trading: 'Dummy'})
+        var returned = aiService.startFake(currentUser.id, currentUser.accessToken);      
+        console.log(returned)  
+    }
+    const stopTrading = (e) => { 
+        this.setState({trading: 'Idle'})
+        var returned = aiService.stop(currentUser.id, currentUser.accessToken);      
+        console.log(returned)  
+    }
 
     return (
         <div className="Main">
@@ -19,12 +44,11 @@ function Main() {
 
             
             <div className="ButtonPanel">
-                <button className="RealButton" onClick={startReal} > Start Trading!</button>
+                <button className="RealButton" onClick={startReal}> Start Trading!</button>
                 <button className="FakeButton" onClick={startFake}> Start Trading with fake money!</button>
                 <button className="StopButton" onClick={stopTrading}> Stop Trading</button>
             </div>
         </div>
     )
+    }
 }
-
-export default Main
