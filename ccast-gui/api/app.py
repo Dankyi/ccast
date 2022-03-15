@@ -34,6 +34,9 @@ def after_request(response):
 def hello():
     return "Hello World!"
 
+#-------------------------------------------------------------------------------------------------------
+# Authentication
+
 @app.route("/users/", methods=["POST"])
 def add_user():
     try:
@@ -181,6 +184,22 @@ def forbidden(e):
         "error": str(e),
         "data": None
     }), 404
+
+#-------------------------------------------------------------------------------------------------------
+# AI controls
+
+@app.route("/ai/startReal", methods=["GET"])
+def startAIReal():
+    return "Started Real Successfully"
+
+@app.route("/ai/startFake", methods=["GET"])
+def startAIFake():
+    return "Started Dummy Successfully"
+
+@app.route("/ai/stop", methods=["GET"])
+def stopAI():
+    return "Stopped Successfully"
+
 
 
 if __name__ == "__main__":
