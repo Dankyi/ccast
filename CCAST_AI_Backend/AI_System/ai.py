@@ -6,7 +6,7 @@ from time import sleep
 
 class AIGridBot(Thread):
 
-    def __init__(self, exchange, money_system, coin_pair, lower_grid_percentage, profit_percentage, grid_amount):
+    def __init__(self, exchange, money_system, dummy, coin_pair, lower_grid_percentage, profit_percentage, grid_amount):
 
         """
 
@@ -14,6 +14,7 @@ class AIGridBot(Thread):
 
         :param exchange: The exchange object
         :param money_system: The middleware object, can be the fake money or real money one
+        :param dummy: Whether the AI will be using real money or fake money, dummy = True is fake money.
         :param coin_pair: The coin-pair to trade, e.g., ETH/BTC
         :param lower_grid_percentage: The price separation between each buy grid, expressed as a percentage
         :param profit_percentage: The price that the bot will sell at, as a percentage above the current price
@@ -24,30 +25,37 @@ class AIGridBot(Thread):
         self.daemon = True  # Lets Python forcefully destroy the thread on an unsafe shutdown, not preferred of course
         self.stop_signal = Event()
 
-        self.order_middleware = money_system.Middleware(grid_amount)
+        self.order_middleware = money_system.Middleware(grid_amount, dummy)
         self.exchange = exchange
         self.coin_pair = coin_pair
         self.lower_grid_percentage = lower_grid_percentage  # Price separation between lower grid prices
         self.profit_percentage = profit_percentage  # Price to sell at as a percentage increase of the current price
         self.grid_amount = grid_amount  # How many lower (buy) grids to create
 
-    def debug_get_balance(self):
+        self.balance = [0.0, 0.0]
+
+    async def __get_balance(self):
 
         """
 
-        A method to obtain the current balance of the user, currently a debug method for testing
+        A method to obtain the current balance of the user and update a variable with it. The AI runs this every loop
+        to keep it up to date.
 
         """
 
-        coin_pair_split = self.coin_pair.split("/")
-        current_balance = self.order_middleware.get_balance()
+        current_balance = await self.order_middleware.get_balance()
+        self.balance = [current_balance[0], current_balance[1]]
 
-        print("Balance: "
-              + str(current_balance[0]) + " " + coin_pair_split[0]
-              + " | "
-              + str(current_balance[1]) + " " + coin_pair_split[1])
+    def get_balance(self):
 
-        print()
+        """
+
+        An external class can get the balance from here, it always in the form BASE/QUOTE e.g., ETH/BTC
+
+        :return: The current balance of the coin pair
+        """
+
+        return self.balance
 
     async def __start_ai(self):
 
@@ -126,6 +134,8 @@ class AIGridBot(Thread):
 
         while True:
 
+            await self.__get_balance()
+
             current_price = await self.exchange.fetch_ticker(self.coin_pair)
             current_price = current_price.__getitem__("last")
             print(self.coin_pair + " Current Price: " + str(current_price))
@@ -147,8 +157,6 @@ class AIGridBot(Thread):
 
                 if self.stop_signal.is_set():
                     break
-
-                self.debug_get_balance()
 
                 sleep(60.0)  # Pause between cycles in-case the market is suddenly dropping or spiking?
 
@@ -187,6 +195,7 @@ class AIGridBot(Thread):
 
         """
 
+        await self.__get_balance()  # Update the balance one last time to be up to date
         await self.exchange.close()  # This can take a second, so the backend needs to utilise .join() to wait for this
 
     def stop(self):  # Backend calls this method when the user presses the stop button in the frontend
