@@ -2,7 +2,7 @@ class Middleware:
 
     def __init__(self, grid_amount, dummy):
 
-        self.real_money = dummy
+        self.real_money = not dummy
 
         if self.real_money:
 
