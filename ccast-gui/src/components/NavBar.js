@@ -29,16 +29,13 @@ const DefaultNavbar = () =>
     return (
         
         <Nav className="navbar">
-        <NavLogo to="/ccast/home">
+        <NavLogo to="/ccast/login">
             <img src={logo} width={175} height={85} />
         </NavLogo>
 
         <Bars />
 
-        <NavMenu>
-            <NavLink to="/ccast/home" activeStyle>
-                Home
-            </NavLink>
+        <NavMenu>            
             <NavLink to="/ccast/login" activeStyle>
                 Login
             </NavLink>

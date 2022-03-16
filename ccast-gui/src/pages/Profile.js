@@ -19,7 +19,7 @@ export default class Profile extends Component {
             <p> How did you get here? </p>
         </div>
     );
-    debugger;
+
     return (
       <div className="container">
         <header className="jumbotron">

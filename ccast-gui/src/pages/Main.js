@@ -36,6 +36,13 @@ export default class Main extends Component {
         console.log(returned)  
     }
 
+    if (currentUser == null) return(
+        <div className='container'>
+              <h1> No Account Information in local storage. </h1>
+              <p> How did you get here? </p>
+          </div>
+      );
+
     return (
         <div className="Main">
             <h1> Welcome to CCAST </h1>
