@@ -72,6 +72,8 @@ class AIGridBot(Thread):
 
         await self.exchange.load_markets(True)
 
+        await self.__get_balance()  # Update the balance before beginning
+
         await self.__run_ai()
 
     async def create_grids(self):
@@ -135,8 +137,6 @@ class AIGridBot(Thread):
 
         while True:
 
-            await self.__get_balance()
-
             current_price = await self.exchange.fetch_ticker(self.coin_pair)
             current_price = current_price.__getitem__("last")
             print(self.coin_pair + " Current Price: " + str(current_price))
@@ -158,6 +158,8 @@ class AIGridBot(Thread):
 
                 if self.stop_signal.is_set():
                     break
+
+                await self.__get_balance()  # Update the balance after selling
 
                 sleep(60.0)  # Pause between cycles in-case the market is suddenly dropping or spiking?
 
@@ -184,6 +186,8 @@ class AIGridBot(Thread):
                         bought = True
 
                         print("Bought!")
+
+                        await self.__get_balance()  # Update the balance after buying
 
         await self.__close_api()
 
