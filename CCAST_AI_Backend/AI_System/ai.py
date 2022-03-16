@@ -44,7 +44,7 @@ class AIGridBot(Thread):
 
         """
 
-        current_balance = await self.order_middleware.get_balance(self.exchange)
+        current_balance = await self.order_middleware.get_balance(self.exchange, self.coin_pair)
         self.balance = [current_balance[0], current_balance[1]]
 
     def get_balance(self):
