@@ -20,7 +20,7 @@ class Middleware:
         fee_dict = exchange.calculate_fee(coin_pair, "market", side, 0, 0)
         return float(fee_dict["rate"])
 
-    async def get_balance(self, exchange=None):
+    async def get_balance(self, exchange):
 
         if self.real_money:
 
