@@ -15,7 +15,7 @@ config = {
 
 
 app = Flask(__name__)
-SECRET_KEY = os.environ.get('SECRET_KEY') or 'She thought squirrels tasted gross, but if she complained, her parents would yell at her.' # Random sentence to act as a secret key (Generated)
+SECRET_KEY = os.environ.get('SECRET_KEY')
 print(SECRET_KEY)
 app.config['SECRET_KEY'] = SECRET_KEY
 
@@ -81,7 +81,7 @@ def login():
         # validate input
         is_validated = validate_email_and_password(data.get('email'), data.get('password'))
         if is_validated is not True:
-            return dict(message='Invalid data', data=None, error=is_validated), 400
+            return dict(message='Invalid username or password', data=None, error=is_validated), 400
         user = User().login(
             data["email"],
             data["password"]
