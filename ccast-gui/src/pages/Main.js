@@ -21,18 +21,22 @@ export default class Main extends Component {
       const { trading } = this.state;
 
     const startReal = (e) => { 
+        if (this.state.trading == 'Live'){ return }
         this.setState({trading: 'Live'})
-        var returned = aiService.startReal(currentUser.id, currentUser.accessToken);      
+        var returned = aiService.startReal(currentUser.id);      
         console.log(returned)  
-    }
+        }
+    
     const startFake = (e) => { 
+        if (this.state.trading == 'Dummy'){ return }
         this.setState({trading: 'Dummy'})
-        var returned = aiService.startFake(currentUser.id, currentUser.accessToken);      
+        var returned = aiService.startFake(currentUser.id);      
         console.log(returned)  
     }
-    const stopTrading = (e) => { 
+    const stopTrading = (e) => {
+        if (this.state.trading == 'Idle'){ return } 
         this.setState({trading: 'Idle'})
-        var returned = aiService.stop(currentUser.id, currentUser.accessToken);      
+        var returned = aiService.stop(currentUser.id);      
         console.log(returned)  
     }
 

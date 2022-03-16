@@ -2,8 +2,12 @@ import jwt
 import os
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
-from validate import validate_email_and_password, validate_user
 
+from validate import validate_email_and_password, validate_user
+from AIController import *
+
+from models import User
+from auth_middleware import token_required
 load_dotenv()
 
 
@@ -16,11 +20,11 @@ config = {
 
 app = Flask(__name__)
 SECRET_KEY = os.environ.get('SECRET_KEY')
-print(SECRET_KEY)
+print("URL = ",os.environ.get('REACT_APP_API_URL') )
 app.config['SECRET_KEY'] = SECRET_KEY
+controller = AiController()
 
-from models import User
-from auth_middleware import token_required
+
 
 @app.after_request
 def after_request(response):
@@ -188,16 +192,40 @@ def forbidden(e):
 #-------------------------------------------------------------------------------------------------------
 # AI controls
 
-@app.route("/ai/startReal", methods=["GET"])
+@app.route("/ai/startReal", methods=["POST"])
 def startAIReal():
+    data = request.json
+    if not data:
+        return {
+            "message": "Please provide user details",
+            "data": None,
+            "error": "Bad request"
+        }, 400
+    controller.add_Pair(data.get('id'), "Live")
     return "Started Real Successfully"
 
-@app.route("/ai/startFake", methods=["GET"])
+@app.route("/ai/startFake", methods=["POST"])
 def startAIFake():
+    data = request.json
+    if not data:
+        return {
+            "message": "Please provide user details",
+            "data": None,
+            "error": "Bad request"
+        }, 400
+    controller.add_Pair(data.get('id'), "Dummy")
     return "Started Dummy Successfully"
 
-@app.route("/ai/stop", methods=["GET"])
+@app.route("/ai/stop", methods=["POST"])
 def stopAI():
+    data = request.json
+    if not data:
+        return {
+            "message": "Please provide user details",
+            "data": None,
+            "error": "Bad request"
+        }, 400
+    controller.remove_Pair(data.get('id'))
     return "Stopped Successfully"
 
 

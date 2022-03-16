@@ -4,46 +4,43 @@ const API_URL = process.env.REACT_APP_API_URL + "ai/";
 
 class AiService {
 
-    startReal(id, token) {
+    startReal(id) {
         console.log("Sending Start Live Request.")
     
         var userData = {
-          "id": id,
-          "token" : token
+          "id": id
         }
         
         return axios
-          .get(API_URL + "startReal", userData)
+          .post(API_URL + "startReal", userData)
           .then( (response) => {    
             return response.data;
           });
     }
 
-    startFake(id, token) {
+    startFake(id) {
         console.log("Sending Start Dummy Request.")
     
         var userData = {
-          "id": id,
-          "token" : token
+          "id": id
         }
         
         return axios
-          .get(API_URL + "startFake", userData)
+          .post(API_URL + "startFake", userData)
           .then( (response) => {    
             return response.data;
           });
     }
 
-    stop(id, token) {
+    stop(id) {
         console.log("Sending Stop Request.")
     
         var userData = {
-          "id": id,
-          "token" : token
+          "id": id
         }
         
         return axios
-          .get(API_URL + "stop", userData)
+          .post(API_URL + "stop", userData)
           .then( (response) => {    
             return response.data;
           });
