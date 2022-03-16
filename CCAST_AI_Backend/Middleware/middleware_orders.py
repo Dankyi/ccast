@@ -20,11 +20,24 @@ class Middleware:
         fee_dict = exchange.calculate_fee(coin_pair, "market", side, 0, 0)
         return float(fee_dict["rate"])
 
-    async def get_balance(self, exchange):
+    async def get_balance(self, exchange, coin_pair):
 
         if self.real_money:
 
-            pass  # TODO: Query exchange for user's balance
+            coin_pair_split = coin_pair.split("/")
+
+            account_balance = await exchange.fetch_balance()
+            account_balance = account_balance["total"]
+
+            base_quote_balance = [0.0, 0.0]
+
+            if coin_pair_split[0] in account_balance:  # Base
+                base_quote_balance[0] = float(account_balance[coin_pair_split[0]])
+
+            if coin_pair_split[1] in account_balance:  # Quote
+                base_quote_balance[1] = float(account_balance[coin_pair_split[1]])
+
+            return base_quote_balance
 
         else:
 
