@@ -6,6 +6,8 @@ class AuthService {
   login(email, password) {
     console.log("Sending Login Request.")
 
+    console.log(API_URL)
+
     var userData = {
       "email": email,
       "password" : password
