@@ -3,7 +3,7 @@ import asyncio
 from threading import Thread, Event
 from time import sleep
 
-from CCAST_AI_Backend.Middleware import middleware_orders as middleware
+from CCAST_AI_Backend.api import middleware_orders as middleware
 
 
 class AIGridBot(Thread):

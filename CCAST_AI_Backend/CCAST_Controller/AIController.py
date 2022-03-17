@@ -1,4 +1,4 @@
-
+from middleware_orders import *
 
 class AiController:
         
@@ -18,18 +18,20 @@ class AiController:
                 return True
         return False
 
-    def replace_middleware(self, id, dummy):
+    def replace_Middleware(self, id, dummy):
         for pair in self.activeMiddleware:
             if (pair.id == id): 
-                pair.middleware = CCAST_AI_Backend.Middleware.middleware_orders.Middleware(self.GRID_AMOUNT, dummy)
+                pair.middleware = Middleware(self.GRID_AMOUNT, dummy)
         return
         
     def add_Pair(self, id, dummy):
 
         if not self.search_Active_By_ID(id):
-            self.activeMiddleware.append(MiddlewarePairs(id, CCAST_AI_Backend.Middleware.middleware_orders.Middleware(self.GRID_AMOUNT, dummy)))
+            self.activeMiddleware.append(MiddlewarePairs(id, Middleware(self.GRID_AMOUNT, dummy)))
         else:
-            self.replace_middleware(id, dummy)
+            self.replace_Middleware(id, dummy)
+
+        print("Current number of Instances: ", len(self.activeMiddleware))
 
         return
 
@@ -39,7 +41,12 @@ class AiController:
             if pair.id == id:
                 self.activeMiddleware.remove(pair)
                 print("Removed pair with ID:", pair.id)
+
+                print("Current number of Instances: ", len(self.activeMiddleware))
+
                 return
+        
+        print("Current number of Instances: ", len(self.activeMiddleware))
 
         return
 

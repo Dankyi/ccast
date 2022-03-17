@@ -24,7 +24,7 @@ export default class Main extends Component {
         if (this.state.trading == 'Live'){ return }
         this.setState({trading: 'Live'})
         var returned = aiService.startReal(currentUser.id);      
-        console.log(returned)  
+        console.log(returned)
         }
     
     const startFake = (e) => { 
@@ -59,6 +59,7 @@ export default class Main extends Component {
                 <button className="FakeButton" onClick={startFake}> Start Trading with fake money!</button>
                 <button className="StopButton" onClick={stopTrading}> Stop Trading</button>
             </div>
+
         </div>
     )
     }
