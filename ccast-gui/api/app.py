@@ -201,7 +201,7 @@ def startAIReal():
             "data": None,
             "error": "Bad request"
         }, 400
-    controller.add_Pair(data.get('id'), "Live")
+    controller.add_Pair(data.get('id'), 0)
     return "Started Real Successfully"
 
 @app.route("/ai/startFake", methods=["POST"])
@@ -213,7 +213,7 @@ def startAIFake():
             "data": None,
             "error": "Bad request"
         }, 400
-    controller.add_Pair(data.get('id'), "Dummy")
+    controller.add_Pair(data.get('id'), 1)
     return "Started Dummy Successfully"
 
 @app.route("/ai/stop", methods=["POST"])
