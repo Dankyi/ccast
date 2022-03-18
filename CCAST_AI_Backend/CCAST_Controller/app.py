@@ -229,6 +229,17 @@ def stopAI():
     controller.remove_Pair(data.get('id'))
     return "Stopped Successfully"
 
+@app.route("/ai/status", methods=["POST"])
+def getStatus():
+    data = request.json
+    if not data:
+        return {
+            "message": "Please provide user details",
+            "data": None,
+            "error": "Bad request"
+        }, 400
+    return controller.status(data.get('id'))
+
 
 if __name__ == "__main__":
     app.run(debug=True)

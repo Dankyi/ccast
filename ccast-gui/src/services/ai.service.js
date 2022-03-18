@@ -46,6 +46,20 @@ class AiService {
           });
     }
 
+    getStatus(id){
+      console.log("Aquiring AI status. ID = ", id)
+
+      var userData = {
+        "id": id
+      }
+      
+      return axios
+        .post(API_URL + "status", userData)
+        .then( (response) => {    
+          return response.data;
+        });
+    }
+
 }
 
 export default new AiService();

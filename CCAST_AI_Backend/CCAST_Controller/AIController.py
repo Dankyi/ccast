@@ -50,6 +50,17 @@ class AiController:
 
         return
 
+    def status(self, id):
+        
+        for pair in self.activeMiddleware:
+            if pair.id == id:
+                if pair.middleware.get_type():
+                    return 'Live'
+                else:
+                    return 'Dummy'
+
+        return 'Idle'
+
 class MiddlewarePairs:
 
     def __init__(self, id, middleware):

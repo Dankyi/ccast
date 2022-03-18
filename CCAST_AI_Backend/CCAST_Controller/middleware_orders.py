@@ -14,6 +14,9 @@ class Middleware:
             self.quote = 1.0
             self.quote_div_grids = self.quote / grid_amount
 
+    def get_type(self):
+        return self.real_money
+
     @staticmethod
     def get_fee(exchange, coin_pair, side):
 

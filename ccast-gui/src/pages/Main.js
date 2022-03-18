@@ -15,6 +15,14 @@ export default class Main extends Component {
         trading: 'Idle'
       };
     }
+
+    // Get the state of the user's AI
+    componentDidMount() {
+        aiService.getStatus(this.state.currentUser.id).then(result => this.setState({
+            trading: result
+          }))
+
+    }
   
     render() {
       const { currentUser } = this.state;
