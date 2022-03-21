@@ -50,7 +50,16 @@ class Middleware:
 
         if self.real_money:
 
-            pass  # TODO: Query exchange for trading user's real money
+            pair_balance = await self.get_balance(exchange, coin_pair)
+            # [BASE, QUOTE]
+
+            if side:  # Buy
+
+                pass
+
+            else:  # Sell
+
+                pass
 
         else:
 
