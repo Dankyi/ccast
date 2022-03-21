@@ -10,8 +10,8 @@ class AiController:
     def __init__(self):
         return
 
-    def grid_amount():
-        return 32    
+    def grid_amount(self):
+        return self.GRID_AMOUNT
 
     def search_Active_By_ID(self, id):
         for pair in self.activeMiddleware:
