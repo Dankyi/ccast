@@ -50,8 +50,7 @@ class Middleware:
 
         if self.real_money:
 
-            pair_balance = await self.get_balance(exchange, coin_pair)
-            # [BASE, QUOTE]
+            pair_balance = await self.get_balance(exchange, coin_pair)  # [BASE/QUOTE] e.g., [0.001, 0.000349]
 
             if side:  # Buy
 
