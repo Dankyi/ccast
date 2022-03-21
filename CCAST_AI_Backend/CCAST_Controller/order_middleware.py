@@ -6,6 +6,8 @@ class Middleware:
 
         if self.real_money:
 
+            self.first_order = True
+            self.grid_amount = grid_amount
             self.quote_div_grids = None  # Will be initialised later!
 
         else:
@@ -52,13 +54,30 @@ class Middleware:
 
             pair_balance = await self.get_balance(exchange, coin_pair)  # [BASE/QUOTE] e.g., [0.001, 0.000349]
 
+            if self.first_order:
+
+                self.quote_div_grids = pair_balance[1] / self.grid_amount
+                self.first_order = False
+
             if side:  # Buy
 
-                pass
+                base_quote_price = await exchange.fetch_ticker(coin_pair)
+                base_quote_price = base_quote_price.__getitem__("last")
+
+                amount = self.quote_div_grids / base_quote_price
+                await exchange.create_order(coin_pair, "market", "buy", amount)
+
+                #  Amount of BASE currency to buy. E.g., if you are trading ETH/BTC, and want to buy 0.1 BTC of ETH,
+                #  you need to do 0.1 / Price, so if ETH/BTC is currently trading at 0.07, then 0.1 BTC is worth
+                #  1.42 ETH, so you feed that into the create_order(..) function.
 
             else:  # Sell
 
-                pass
+                await exchange.create_order(coin_pair, "market", "sell", pair_balance[0])
+
+                #  Amount of BASE currency to sell. Since we want to sell all of the BASE currency at once, we only
+                #  need to feed it the latest current balance. E.g., if you have ETH/BTC as [5.63, 0.031] then you want
+                #  to just sell all 5.63 ETH, so just pass index 0 in as the amount without any other processing.
 
         else:
 
