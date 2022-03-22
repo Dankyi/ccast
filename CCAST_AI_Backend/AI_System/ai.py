@@ -10,7 +10,7 @@ from CCAST_AI_Backend.CCAST_Controller import order_middleware as middleware
 
 class AIGridBot(Thread):
 
-    def __init__(self, exchange, dummy, coin_pair, lower_grid_percentage, profit_percentage, grid_amount):
+    def __init__(self, exchange, dummy, coin_pair, lower_grid_percentage, profit_percentage):
 
         """
 
@@ -21,21 +21,26 @@ class AIGridBot(Thread):
         :param coin_pair: The coin-pair to trade, e.g., ETH/BTC
         :param lower_grid_percentage: The price separation between each buy grid, expressed as a percentage
         :param profit_percentage: The price that the bot will sell at, as a percentage above the current price
-        :param grid_amount: The amount of lower (buy) grids to create
         """
 
         Thread.__init__(self)  # The class inherits the Thread class in Python
         self.daemon = True  # Lets Python forcefully destroy the thread on an unsafe shutdown, not preferred of course
         self.stop_signal = Event()
 
-        self.order_middleware = middleware.Middleware(grid_amount, dummy)
+        self.MIN_PERCENTAGE = 0.25  # Don't allow lower grids to go below this percentage, the default (0.25) would
+        #  represent 25% of the entire coins price, it is basically a limit on the number of grids that can be created.
+        #  If you could keep going infinitely, then you could have grids set to negative prices.
+
         self.exchange = exchange
+        self.dummy = dummy
         self.coin_pair = coin_pair
         self.lower_grid_percentage = lower_grid_percentage  # Price separation between lower grid prices
         self.profit_percentage = profit_percentage  # Price to sell at as a percentage increase of the current price
-        self.grid_amount = grid_amount  # How many lower (buy) grids to create
 
+        #  These three are calculated later, so are set to some default values on construction.
         self.balance = [0.0, 0.0]
+        self.grid_amount = 0
+        self.order_middleware = middleware.Middleware(1, dummy)
 
     async def __get_balance(self):
 
@@ -60,6 +65,47 @@ class AIGridBot(Thread):
 
         return self.balance
 
+    async def __init_grid_amount_and_middleware(self):
+
+        """
+
+        Calculate the amount of grids to create. Attempts to get as close to the minimum purchasable amount that it
+        can, and also factors in a hard limit on how low the grids can go (self.MIN_PERCENTAGE).
+
+        The hard limit is mostly to save on CPU and RAM usage. For example, if you were trading ETH/BTC, and had 1 BTC,
+        and the current price of ETH/BTC was 0.0703975, if the minimum purchasable amount of ETH was 0.001 (this is the
+        value for FTX) you would create 14205 grids. Not only would this produce grid prices less than zero (the other
+        reason for the hard limit), it is simply extremely unlikely that a coin pair would get anywhere close to being
+        worth 0, so holding such a big list in memory is a waste of RAM, and looping through the whole 14205 indexes is
+        also a waste of CPU, so it's sensible to have a minimum price level, which is 75% of the current value of the
+        coin by default.
+
+        """
+
+        min_base_order_amount = float(self.exchange.markets[self.coin_pair]["limits"]["amount"]["min"])
+
+        buy_fee = self.order_middleware.get_fee(self.exchange, self.coin_pair, "buy")
+
+        base_quote_price = await self.exchange.fetch_ticker(self.coin_pair)
+        base_quote_price = base_quote_price.__getitem__("last")
+
+        quote_to_base = self.balance[1] / base_quote_price
+        self.grid_amount = int(quote_to_base // min_base_order_amount)
+
+        minimum_grid_level = base_quote_price * (1.0 - self.MIN_PERCENTAGE)
+        grid_step_price = base_quote_price * (self.lower_grid_percentage / 100.0)
+
+        for i in range(self.grid_amount):
+
+            base_quote_price -= grid_step_price
+            base_quote_price -= (base_quote_price * buy_fee)
+
+            if base_quote_price < minimum_grid_level and i < self.grid_amount:
+                self.grid_amount = i
+                break
+
+        self.order_middleware = middleware.Middleware(self.grid_amount, self.dummy)
+
     async def __start_ai(self):
 
         """
@@ -75,6 +121,8 @@ class AIGridBot(Thread):
         await self.exchange.load_markets(True)
 
         await self.__get_balance()  # Update the balance before beginning
+
+        await self.__init_grid_amount_and_middleware()
 
         await self.__run_ai()
 
