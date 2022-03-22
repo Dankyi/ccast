@@ -37,6 +37,8 @@ class AIGridBot(Thread):
         self.lower_grid_percentage = lower_grid_percentage  # Price separation between lower grid prices
         self.profit_percentage = profit_percentage  # Price to sell at as a percentage increase of the current price
 
+        self.coin_pair_price = 0.0
+
         #  These three are calculated later, so are set to some default values on construction.
         self.balance = [0.0, 0.0]
         self.grid_amount = 0
@@ -64,6 +66,21 @@ class AIGridBot(Thread):
         """
 
         return self.balance
+
+    def get_grid_amount(self):
+
+        """
+
+        An external class can get the grid amount from here.
+
+        :return: The grid amount
+        """
+
+        return self.grid_amount
+
+    def get_current_price(self):
+
+        return self.coin_pair_price
 
     async def __init_grid_amount_and_middleware(self):
 
@@ -115,9 +132,6 @@ class AIGridBot(Thread):
 
         """
 
-        print("Fees will be taken into account automatically during grid creation!")
-        print()
-
         await self.exchange.load_markets(True)
 
         await self.__get_balance()  # Update the balance before beginning
@@ -164,10 +178,6 @@ class AIGridBot(Thread):
             grids["Buy"].append([current_price, False])
             current_price -= grid_step_price
 
-        print("Lower (Buy): " + str(grids["Buy"]))
-        print("Upper (Sell): " + str(grids["Sell"]))
-        print()
-
         return grids
 
     async def __run_ai(self):
@@ -191,13 +201,12 @@ class AIGridBot(Thread):
 
                 current_price = await self.exchange.fetch_ticker(self.coin_pair)
                 current_price = current_price.__getitem__("last")
+                self.coin_pair_price = current_price
 
             except ccxt.RequestTimeout:
 
                 sleep(1.0)  # Sleep for a second and try again if a request times out.
                 continue
-
-            print(self.coin_pair + " Current Price: " + str(current_price))
 
             if current_price >= grids["Sell"]:
 
@@ -211,8 +220,6 @@ class AIGridBot(Thread):
                 bought = False
 
                 await self.order_middleware.process_order(self.exchange, False, self.coin_pair)
-
-                print("Sold!")
 
                 if self.stop_signal.is_set():
                     break
@@ -229,7 +236,6 @@ class AIGridBot(Thread):
                 if not bought:
                     break
                 else:
-                    print("Selling remaining order/s before stopping...")
                     continue
 
             for grid_price in grids["Buy"]:
@@ -242,8 +248,6 @@ class AIGridBot(Thread):
                         grid_price[1] = True
 
                         bought = True
-
-                        print("Bought!")
 
                         await self.__get_balance()  # Update the balance after buying
 
