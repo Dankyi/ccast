@@ -3,7 +3,7 @@ import asyncio
 from threading import Thread, Event
 from time import sleep
 
-import ccxt
+import ccxt.async_support as ccxt
 
 from CCAST_AI_Backend.CCAST_Controller import order_middleware as middleware
 
