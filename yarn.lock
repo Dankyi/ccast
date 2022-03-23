@@ -567,6 +567,11 @@
   "resolved" "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001317.tgz"
   "version" "1.0.30001317"
 
+"ccxt@^1.76.91":
+  "integrity" "sha512-lzmnDZi5eNKHWPrzQFr+Sl2rXbYS0S1uE/6a9OYfcw6NWfxyW2aZgV1FCCeO+BwyL+xSZgvmLHbILkPpNj29gw=="
+  "resolved" "https://registry.npmjs.org/ccxt/-/ccxt-1.76.91.tgz"
+  "version" "1.76.91"
+
 "chalk@^2.0.0":
   "integrity" "sha512-Mti+f9lpJNcwF4tWV8/OrTTtF1gZi+f8FqlyAdouralcFWFQWF2+NgCHShjkCb+IFBLq9buZwE1xckQU4peSuQ=="
   "resolved" "https://registry.npmjs.org/chalk/-/chalk-2.4.2.tgz"

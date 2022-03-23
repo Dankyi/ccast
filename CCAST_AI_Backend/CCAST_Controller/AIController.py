@@ -1,11 +1,10 @@
+from AI_System import ai
 from order_middleware import *
-
+import ccxt.async_support as ccxt
 
 class AiController:
         
-    activeMiddleware = []
-
-    GRID_AMOUNT = 32
+    activeMiddleware = {}
 
     def __init__(self):
         return
@@ -14,57 +13,64 @@ class AiController:
         return self.GRID_AMOUNT
 
     def search_Active_By_ID(self, id):
-        for pair in self.activeMiddleware:
-            if (pair.id == id): 
-                return True
-        return False
+        return self.activeMiddleware[id] != None               
 
-    def replace_Middleware(self, id, dummy):
-        for pair in self.activeMiddleware:
-            if (pair.id == id): 
-                pair.middleware = Middleware(self.GRID_AMOUNT, dummy)
-        return
+
+    def makeAIInstance(self, dummy):
+        
+        #TODO Pass a variable for each of the values defined.
+
+        coin = "ETH/BTC"
+        lower_percentage = 0.0005
+        profit_percentage = 0.001
+        key = ""
+        secret = ""
+
+        EXCHANGE = ccxt.binance({"verbose": False, "enableRateLimit": True, "apiKey": key, "secret": secret})
+        AI = ai.AIGridBot(EXCHANGE, dummy, coin, lower_percentage, profit_percentage)  # Dummy  True = Fake, False = Real
+        return AI
         
     def add_Pair(self, id, dummy):
-
-        if not self.search_Active_By_ID(id):
-            self.activeMiddleware.append(MiddlewarePairs(id, Middleware(self.GRID_AMOUNT, dummy)))
-        else:
-            self.replace_Middleware(id, dummy)
-
+        
+        self.activeMiddleware[id] = AIPairs(id, self.makeAIInstance(dummy))       
         print("Current number of Instances: ", len(self.activeMiddleware))
-
+        self.activeMiddleware[id].start()
+        print("Started AI")
         return
 
     def remove_Pair(self, id):
-
-        for pair in self.activeMiddleware:
-            if pair.id == id:
-                self.activeMiddleware.remove(pair)
-                print("Removed pair with ID:", pair.id)
-
-                print("Current number of Instances: ", len(self.activeMiddleware))
-
-                return
-        
-        print("Current number of Instances: ", len(self.activeMiddleware))
-
+        if id in self.activeMiddleware:  
+            self.activeMiddleware[id].stop()
+            print("Stopping AI")
+            del self.activeMiddleware[id]        
+            print("Removed pair with ID:", id)
+            print("Current number of Instances: ", len(self.activeMiddleware))
+            
         return
+        
 
     def status(self, id):
         
-        for pair in self.activeMiddleware:
-            if pair.id == id:
-                if pair.middleware.get_type():
-                    return 'Live'
-                else:
-                    return 'Dummy'
+        if id in self.activeMiddleware:  
 
-        return 'Idle'
+            ai = self.activeMiddleware[id]
+            live = ai.get_type()
+            if (live):
+                return 'Live'
+            else:
+                return 'Dummy'
+        else:
+            return 'Idle'
 
-class MiddlewarePairs:
+class AIPairs:
 
     def __init__(self, id, middleware):
         self.id = id
         self.middleware = middleware
         print("Created new pair with ID: ", id)
+
+    def start(self):
+        self.middleware.start()
+
+    def stop(self):
+        self.middleware.stop()

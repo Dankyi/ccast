@@ -14,13 +14,8 @@ export default class Main extends Component {
         // Three states for trading: Idle, Dummy, and Live
         trading: 'Idle'
       };
-    }
 
-    // Get the state of the user's AI
-    componentDidMount() {
-        aiService.getStatus(this.state.currentUser.id).then(result => this.setState({
-            trading: result
-          }))
+      
 
     }
   
