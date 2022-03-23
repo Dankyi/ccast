@@ -82,6 +82,10 @@ class AIGridBot(Thread):
 
         return self.coin_pair_price
 
+    def is_running(self):
+
+        return self.is_alive()
+
     async def __init_grid_amount_and_middleware(self):
 
         """
