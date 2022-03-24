@@ -5,7 +5,7 @@ from time import sleep
 
 import ccxt.async_support as ccxt
 
-import order_middleware as middleware
+import CCAST_AI_Backend.CCAST_Controller.order_middleware as middleware
 
 
 class AIGridBot(Thread):
@@ -205,12 +205,18 @@ class AIGridBot(Thread):
 
                 current_price = await self.exchange.fetch_ticker(self.coin_pair)
                 current_price = current_price.__getitem__("last")
-                self.coin_pair_price = current_price
 
-            except ccxt.RequestTimeout:
+            except (ccxt.RequestTimeout,
+                    ccxt.DDoSProtection,
+                    ccxt.ExchangeNotAvailable,
+                    ccxt.ExchangeError,
+                    ccxt.InvalidNonce):
 
                 sleep(1.0)  # Sleep for a second and try again if a request times out.
+                # TODO: Log thrown error just in-case?
                 continue
+
+            self.coin_pair_price = current_price
 
             if current_price >= grids["Sell"]:
 
