@@ -1,11 +1,10 @@
-from platform import system as operating_system
 import asyncio
+from platform import system as operating_system
 from threading import Thread, Event
 from time import sleep
 
-import ccxt.async_support as ccxt
-
-import CCAST_AI_Backend.CCAST_Controller.order_middleware as middleware
+import CCAST_AI_Backend.CCAST_Controller.order_middleware as or_middleware
+import CCAST_AI_Backend.CCAST_Controller.AI_System.exchange_middleware as ex_middleware
 
 
 class AIGridBot(Thread):
@@ -42,7 +41,7 @@ class AIGridBot(Thread):
         #  These three are calculated later, so are set to some default values on construction.
         self.balance = [0.0, 0.0]
         self.grid_amount = 0
-        self.order_middleware = middleware.Middleware(1, dummy)
+        self.order_middleware = or_middleware.Middleware(1, dummy)
 
     async def __get_balance(self):
 
@@ -107,8 +106,7 @@ class AIGridBot(Thread):
 
         buy_fee = self.order_middleware.get_fee(self.exchange, self.coin_pair, "buy")
 
-        base_quote_price = await self.exchange.fetch_ticker(self.coin_pair)
-        base_quote_price = base_quote_price.__getitem__("last")
+        base_quote_price = await ex_middleware.fetch_current_price(self.exchange, self.coin_pair)
 
         quote_to_base = self.balance[1] / base_quote_price
         self.grid_amount = int(quote_to_base // min_base_order_amount)
@@ -125,7 +123,7 @@ class AIGridBot(Thread):
                 self.grid_amount = i
                 break
 
-        self.order_middleware = middleware.Middleware(self.grid_amount, self.dummy)
+        self.order_middleware = or_middleware.Middleware(self.grid_amount, self.dummy)
 
     async def __start_ai(self):
 
@@ -136,7 +134,7 @@ class AIGridBot(Thread):
 
         """
 
-        await self.exchange.load_markets(True)
+        await ex_middleware.load_markets(self.exchange)
 
         await self.__get_balance()  # Update the balance before beginning
 
@@ -165,8 +163,7 @@ class AIGridBot(Thread):
         #
         grids = {"Buy": [], "Sell": 0.0}
 
-        current_price = await self.exchange.fetch_ticker(self.coin_pair)
-        current_price = current_price.__getitem__("last")
+        current_price = await ex_middleware.fetch_current_price(self.exchange, self.coin_pair)
 
         buy_fee = self.order_middleware.get_fee(self.exchange, self.coin_pair, "buy")
         sell_fee = self.order_middleware.get_fee(self.exchange, self.coin_pair, "sell")
@@ -201,21 +198,7 @@ class AIGridBot(Thread):
 
         while True:
 
-            try:
-
-                current_price = await self.exchange.fetch_ticker(self.coin_pair)
-                current_price = current_price.__getitem__("last")
-
-            except (ccxt.RequestTimeout,
-                    ccxt.DDoSProtection,
-                    ccxt.ExchangeNotAvailable,
-                    ccxt.ExchangeError,
-                    ccxt.InvalidNonce):
-
-                sleep(1.0)  # Sleep for a second and try again if a request times out.
-                # TODO: Log thrown error just in-case?
-                continue
-
+            current_price = await ex_middleware.fetch_current_price(self.exchange, self.coin_pair)
             self.coin_pair_price = current_price
 
             if current_price >= grids["Sell"]:
