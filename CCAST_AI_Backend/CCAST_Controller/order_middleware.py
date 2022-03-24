@@ -1,3 +1,6 @@
+import CCAST_AI_Backend.CCAST_Controller.AI_System.exchange_middleware as ex_middleware
+
+
 class Middleware:
 
     def __init__(self, grid_amount, dummy):
@@ -31,8 +34,7 @@ class Middleware:
 
             coin_pair_split = coin_pair.split("/")
 
-            account_balance = await exchange.fetch_balance()
-            account_balance = account_balance["total"]
+            account_balance = await ex_middleware.fetch_balance(exchange)
 
             base_quote_balance = [0.0, 0.0]
 
@@ -61,11 +63,10 @@ class Middleware:
 
             if side:  # Buy
 
-                base_quote_price = await exchange.fetch_ticker(coin_pair)
-                base_quote_price = base_quote_price.__getitem__("last")
+                base_quote_price = await ex_middleware.fetch_current_price(exchange, coin_pair)
 
                 amount = self.quote_div_grids / base_quote_price
-                await exchange.create_order(coin_pair, "market", "buy", amount)
+                await ex_middleware.create_order(exchange, coin_pair, "buy", amount)
 
                 #  Amount of BASE currency to buy. E.g., if you are trading ETH/BTC, and want to buy 0.1 BTC of ETH,
                 #  you need to do 0.1 / Price, so if ETH/BTC is currently trading at 0.07, then 0.1 BTC is worth
@@ -73,7 +74,7 @@ class Middleware:
 
             else:  # Sell
 
-                await exchange.create_order(coin_pair, "market", "sell", pair_balance[0])
+                await ex_middleware.create_order(exchange, coin_pair, "sell", pair_balance[0])
 
                 #  Amount of BASE currency to sell. Since we want to sell all of the BASE currency at once, we only
                 #  need to feed it the latest current balance. E.g., if you have ETH/BTC as [5.63, 0.031] then you want
@@ -85,8 +86,7 @@ class Middleware:
 
                 self.quote -= self.quote_div_grids
 
-                base_quote_price = await exchange.fetch_ticker(coin_pair)
-                base_quote_price = base_quote_price.__getitem__("last")
+                base_quote_price = await ex_middleware.fetch_current_price(exchange, coin_pair)
 
                 amount = self.quote_div_grids / base_quote_price
 
@@ -99,12 +99,10 @@ class Middleware:
                 base_dollar_pair = coin_pair_split[0] + "/" + "USDT"
                 quote_dollar_pair = coin_pair_split[1] + "/" + "USDT"
 
-                base_dollars = await exchange.fetch_ticker(base_dollar_pair)
-                base_dollars = base_dollars.__getitem__("last")
+                base_dollars = await ex_middleware.fetch_current_price(exchange, base_dollar_pair)
                 base_dollars *= self.base
 
-                quote_dollars = await exchange.fetch_ticker(quote_dollar_pair)
-                quote_dollars = quote_dollars.__getitem__("last")
+                quote_dollars = await ex_middleware.fetch_current_price(exchange, quote_dollar_pair)
 
                 quote_amount = base_dollars / quote_dollars
 
