@@ -60,7 +60,7 @@ async def fetch_current_price(exchange, coin_pair):
     return current_price
 
 
-async def get_balance(exchange):
+async def fetch_balance(exchange):
 
     account_balance = {}
     success = False
