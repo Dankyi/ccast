@@ -1,4 +1,4 @@
-import CCAST_AI_Backend.CCAST_Controller.AI_System.exchange_middleware as ex_middleware
+import CCAST_AI_Backend.CCAST_Controller.exchange_middleware as ex_middleware
 
 
 class Middleware:
