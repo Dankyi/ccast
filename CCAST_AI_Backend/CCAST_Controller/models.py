@@ -18,6 +18,8 @@ class User:
         email = ""
         password = ""
         token = ""
+        marketToken = ""
+        marketSecret = ""
         return
 
     def toJSON(self):
@@ -31,7 +33,7 @@ class User:
         con = sqlite3.connect('users.db')
         cur = con.cursor()
 
-        cur.execute("CREATE TABLE IF NOT EXISTS users (name TEXT NOT NULL, email TEXT NOT NULL, password TEXT NOT NULL)")
+        cur.execute("CREATE TABLE IF NOT EXISTS users (name TEXT NOT NULL, email TEXT NOT NULL, password TEXT NOT NULL, marketToken TEXT, marketSecret TEXT)")
 
         return con
     
@@ -50,6 +52,8 @@ class User:
         self.name = result[1]
         self.email = result[2]
         self.password = result[3]
+        self.marketToken = result[4]
+        self.marketSecret = result[5]
 
         #print("ID: ", self.id)
         #print("Name: ", self.name)
@@ -96,6 +100,24 @@ class User:
         user = self.convert_to_user(result)
         #print("User ID: ? NAME: ? EMAIL: ? PASS: ?", (user.id, user.name, user.email, user.password))
         return user
+
+    def setMarketDetails(self, email, token, secret):
+        """Set market details for a user"""
+        
+         # Get user data from the database        
+        con = self.get_con()
+        cur = con.cursor()
+
+        #print(self.encrypt_password(password))
+
+        cur.execute("UPDATE 'users' SET marketToken = ?, marketSecret = ? WHERE email = ?", (token, secret, email))
+        # Determine if at least 1 row was affected.
+        
+        success = cur.rowcount > 0
+
+        self.close_con(con)
+        
+        return success
 
 
     def get_by_email(self, email):

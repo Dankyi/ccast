@@ -26,14 +26,14 @@ export default class Main extends Component {
     const startReal = (e) => { 
         if (this.state.trading == 'Live'){ return }
         this.setState({trading: 'Live'})
-        var returned = aiService.startReal(currentUser.id);      
+        var returned = aiService.startReal(currentUser.id, currentUser.marketToken, currentUser.marketSecret);      
         console.log(returned)
         }
     
     const startFake = (e) => { 
         if (this.state.trading == 'Dummy'){ return }
         this.setState({trading: 'Dummy'})
-        var returned = aiService.startFake(currentUser.id);      
+        var returned = aiService.startFake(currentUser.id, currentUser.marketToken, currentUser.marketSecret);          
         console.log(returned)  
     }
     const stopTrading = (e) => {

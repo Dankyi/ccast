@@ -16,7 +16,6 @@ class AuthService {
     return axios
       .post(API_URL + "login", userData)
       .then( (response) => {
-        console.log("Within the .then() method")
         if (response.data.data.accessToken) {
           localStorage.setItem("user", JSON.stringify(response.data));
         }
@@ -44,6 +43,22 @@ class AuthService {
     console.log(request)
 
     return request
+  }
+
+  setTokens(email, token, secret){
+    
+    var userData = {
+      "email": email,
+      "token": token,
+      "secret" : secret
+    }
+
+    return axios
+      .post(API_URL + "token", userData)
+      .then( (response) => {        
+        return response.data;
+      });
+
   }
 
   getCurrentUser() {

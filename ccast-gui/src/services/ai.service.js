@@ -4,11 +4,13 @@ const API_URL = "http://127.0.0.1:5000/ai/";
 
 class AiService {
 
-    startReal(id) {
+    startReal(id, marketToken, marketSecret) {
         console.log("Sending Start Live Request.")
     
         var userData = {
-          "id": id
+          "id": id,
+          "token": marketToken,
+          "secret": marketSecret
         }
         
         return axios
@@ -18,11 +20,13 @@ class AiService {
           });
     }
 
-    startFake(id) {
+    startFake(id, marketToken, marketSecret) {
         console.log("Sending Start Dummy Request.")
     
         var userData = {
-          "id": id
+          "id": id,
+          "token": marketToken,
+          "secret": marketSecret
         }
         
         return axios

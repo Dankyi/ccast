@@ -16,23 +16,20 @@ class AiController:
         return self.activeMiddleware[id] != None               
 
 
-    def makeAIInstance(self, dummy):
+    def makeAIInstance(self, dummy, key, secret, coin):
         
         #TODO Pass a variable for each of the values defined.
 
-        coin = "ETH/BTC"
         lower_percentage = 0.0005
         profit_percentage = 0.001
-        key = ""
-        secret = ""
 
-        EXCHANGE = ccxt.binance({"verbose": False, "enableRateLimit": True, "apiKey": key, "secret": secret})
+        EXCHANGE = ccxt.ftx({"verbose": False, "enableRateLimit": True, "apiKey": key, "secret": secret})
         AI = ai.AIGridBot(EXCHANGE, dummy, coin, lower_percentage, profit_percentage)  # Dummy  True = Fake, False = Real
         return AI
         
-    def add_Pair(self, id, dummy):
+    def add_Pair(self, id, dummy, key, secret, coin):
         
-        self.activeMiddleware[id] = AIPairs(id, self.makeAIInstance(dummy))       
+        self.activeMiddleware[id] = AIPairs(id, self.makeAIInstance(dummy, key, secret, coin))       
         print("Current number of Instances: ", len(self.activeMiddleware))
         self.activeMiddleware[id].start()
         print("Started AI")
