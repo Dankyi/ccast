@@ -206,10 +206,10 @@ class AIGridBot(Thread):
 
                 await self.order_middleware.process_order(self.exchange, False, self.coin_pair)
 
+                await self.__get_balance(False)  # Update the balance after selling
+
                 if self.stop_signal.is_set():
                     break
-
-                await self.__get_balance(False)  # Update the balance after selling
 
                 sleep(60.0)  # Pause between cycles in-case the market is suddenly dropping or spiking?
 
