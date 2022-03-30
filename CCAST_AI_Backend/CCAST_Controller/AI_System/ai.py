@@ -43,7 +43,7 @@ class AIGridBot(Thread):
         self.grid_amount = 0
         self.order_middleware = or_middleware.Middleware(1, dummy)
 
-    async def __get_balance(self):
+    async def __get_balance(self, side):
 
         """
 
@@ -52,7 +52,7 @@ class AIGridBot(Thread):
 
         """
 
-        current_balance = await self.order_middleware.get_balance(self.exchange, self.coin_pair)
+        current_balance = await self.order_middleware.get_balance(self.exchange, side, self.coin_pair)
         self.balance = [current_balance[0], current_balance[1]]
 
     def get_balance(self):
@@ -79,11 +79,29 @@ class AIGridBot(Thread):
 
     def get_current_price(self):
 
+        """
+
+        Get the current coin pair price in the form BASE/QUOTE
+
+        :return: the current coin pair price
+        """
+
         return self.coin_pair_price
 
     def is_running(self):
 
+        """
+
+        Is the AI alive?
+
+        :return: True if the AI is alive, False if it is dead
+        """
+
         return self.is_alive()
+
+    def get_percentage_profit(self):
+
+        return self.order_middleware.get_percentage_profit()
 
     async def __init_grid_amount_and_middleware(self):
 
@@ -136,7 +154,7 @@ class AIGridBot(Thread):
 
         await ex_middleware.load_markets(self.exchange)
 
-        await self.__get_balance()  # Update the balance before beginning
+        await self.__get_balance(None)  # Update the balance before beginning
 
         await self.__init_grid_amount_and_middleware()
 
@@ -217,7 +235,7 @@ class AIGridBot(Thread):
                 if self.stop_signal.is_set():
                     break
 
-                await self.__get_balance()  # Update the balance after selling
+                await self.__get_balance(False)  # Update the balance after selling
 
                 sleep(60.0)  # Pause between cycles in-case the market is suddenly dropping or spiking?
 
@@ -242,7 +260,7 @@ class AIGridBot(Thread):
 
                         bought = True
 
-                        await self.__get_balance()  # Update the balance after buying
+                        await self.__get_balance(True)  # Update the balance after buying
 
         await self.__close_api()
 
@@ -255,7 +273,7 @@ class AIGridBot(Thread):
 
         """
 
-        await self.__get_balance()  # Update the balance one last time to be up to date
+        await self.__get_balance(None)  # Update the balance one last time to be up to date
         await self.exchange.close()  # This can take a second, so the backend needs to utilise .join() to wait for this
 
     def stop(self):  # Backend calls this method when the user presses the stop button in the frontend

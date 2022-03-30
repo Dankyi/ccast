@@ -6,6 +6,10 @@ class Middleware:
     def __init__(self, grid_amount, dummy):
 
         self.real_money = not dummy
+        self.initial_balance = True
+
+        self.starting_quote = 0.0
+        self.profit_percentage = 0.0
 
         if self.real_money:
 
@@ -28,7 +32,13 @@ class Middleware:
         fee_dict = exchange.calculate_fee(coin_pair, "market", side, 0, 0)
         return float(fee_dict["rate"])
 
-    async def get_balance(self, exchange, coin_pair):
+    def get_percentage_profit(self):
+
+        return self.profit_percentage
+
+    async def get_balance(self, exchange, side, coin_pair):
+
+        current_balance = [0.0, 0.0]
 
         if self.real_money:
 
@@ -36,25 +46,37 @@ class Middleware:
 
             account_balance = await ex_middleware.fetch_balance(exchange)
 
-            base_quote_balance = [0.0, 0.0]
-
             if coin_pair_split[0] in account_balance:  # Base
-                base_quote_balance[0] = float(account_balance[coin_pair_split[0]])
+                current_balance[0] = float(account_balance[coin_pair_split[0]])
 
             if coin_pair_split[1] in account_balance:  # Quote
-                base_quote_balance[1] = float(account_balance[coin_pair_split[1]])
-
-            return base_quote_balance
+                current_balance[1] = float(account_balance[coin_pair_split[1]])
 
         else:
 
-            return [self.base, self.quote]
+            current_balance[0] = self.base
+            current_balance[1] = self.quote
+
+        if self.initial_balance:
+
+            self.starting_quote = current_balance[1]
+            self.initial_balance = False
+
+        else:
+
+            if side is not None:
+
+                if not side:
+
+                    self.profit_percentage = (1.0 - (self.starting_quote / current_balance[1])) * 100.0
+
+        return current_balance
 
     async def process_order(self, exchange, side, coin_pair):
 
         if self.real_money:
 
-            pair_balance = await self.get_balance(exchange, coin_pair)  # [BASE/QUOTE] e.g., [0.001, 0.000349]
+            pair_balance = await self.get_balance(exchange, side, coin_pair)  # [BASE/QUOTE] e.g., [0.001, 0.000349]
 
             if self.first_order:
 
