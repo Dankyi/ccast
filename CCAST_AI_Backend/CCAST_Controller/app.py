@@ -1,3 +1,4 @@
+from re import S
 import jwt
 import os
 from dotenv import load_dotenv
@@ -190,6 +191,39 @@ def forbidden(e):
         "data": None
     }), 404
 
+@app.route("/users/token", methods=["POST"])
+def setMarketToken():
+    try:
+        data = request.json
+        if not data:
+            return {
+                "message": "Please provide market details",
+                "data": None,
+                "error": "Bad request"
+            }, 400        
+        print(data)
+
+        success = User().setMarketDetails(
+            data["email"],
+            data["token"],
+            data["secret"]
+            )
+        if not success:
+            return {
+                "message": "Something went wrong",
+                "error": "Error",
+                "data": None
+            }, 500
+        return {
+            "message": "Successfully stored market details"            
+        }, 201
+    except Exception as e:
+        return {
+            "message": "Something went wrong",
+            "error": str(e),
+            "data": None
+        }, 500
+
 #-------------------------------------------------------------------------------------------------------
 # AI controls
 
@@ -202,7 +236,7 @@ def startAIReal():
             "data": None,
             "error": "Bad request"
         }, 400
-    controller.add_Pair(data.get('id'), 0)
+    controller.add_Pair(data.get('id'), 0, data.get('marketToken'), data.get('marketSecret'), "ETH/BTC")
     return "Started Real Successfully"
 
 @app.route("/ai/startFake", methods=["POST"])
@@ -214,7 +248,7 @@ def startAIFake():
             "data": None,
             "error": "Bad request"
         }, 400
-    controller.add_Pair(data.get('id'), 1)
+    controller.add_Pair(data.get('id'), 1, data.get('marketToken'), data.get('marketSecret'), "ETH/BTC")
     return "Started Dummy Successfully"
 
 @app.route("/ai/stop", methods=["POST"])

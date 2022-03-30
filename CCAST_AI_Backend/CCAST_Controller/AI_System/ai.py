@@ -3,8 +3,8 @@ from platform import system as operating_system
 from threading import Thread, Event
 from time import sleep
 
-import CCAST_AI_Backend.CCAST_Controller.order_middleware as or_middleware
-import CCAST_AI_Backend.CCAST_Controller.exchange_middleware as ex_middleware
+import order_middleware as or_middleware
+import exchange_middleware as ex_middleware
 
 
 class AIGridBot(Thread):
