@@ -55,53 +55,27 @@ class AIGridBot(Thread):
         current_balance = await self.order_middleware.get_balance(self.exchange, side, self.coin_pair)
         self.balance = [current_balance[0], current_balance[1]]
 
-    def get_balance(self):
+    def get_information(self):
 
         """
 
-        An external class can get the balance from here, it always in the form BASE/QUOTE e.g., ETH/BTC
+        A getter method that contains information that the frontend may want to pull from the AI, can be expanded as
+        necessary.
 
-        :return: The current balance of the coin pair
+        BALANCE: The users current balance in the form [BASE, QUOTE]
+        GRID AMOUNT: The amount of grids the AI has created
+        CURRENT PRICE: The current price of the coin pair, e.g., ETH/BTC may be 0.0718825
+        ALIVE: Is the AI thread running?
+        PROFIT: The percentage profit of the QUOTE currency since the AI instance was started
+
+        :return: a dictionary containing the above described information
         """
 
-        return self.balance
-
-    def get_grid_amount(self):
-
-        """
-
-        An external class can get the grid amount from here.
-
-        :return: The grid amount
-        """
-
-        return self.grid_amount
-
-    def get_current_price(self):
-
-        """
-
-        Get the current coin pair price in the form BASE/QUOTE
-
-        :return: the current coin pair price
-        """
-
-        return self.coin_pair_price
-
-    def is_running(self):
-
-        """
-
-        Is the AI alive?
-
-        :return: True if the AI is alive, False if it is dead
-        """
-
-        return self.is_alive()
-
-    def get_percentage_profit(self):
-
-        return self.order_middleware.get_percentage_profit()
+        return {"BALANCE": self.balance,
+                "GRID AMOUNT": self.grid_amount,
+                "CURRENT PRICE": self.coin_pair_price,
+                "ALIVE": self.is_alive(),
+                "PROFIT": self.order_middleware.get_percentage_profit()}
 
     async def __init_grid_amount_and_middleware(self):
 
