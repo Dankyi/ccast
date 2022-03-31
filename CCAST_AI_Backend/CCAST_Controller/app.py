@@ -128,7 +128,6 @@ def login():
 
 
 @app.route("/users/", methods=["GET"])
-@token_required
 def get_current_user(current_user):
     return jsonify({
         "message": "successfully retrieved user profile",
@@ -136,7 +135,6 @@ def get_current_user(current_user):
     })
 
 @app.route("/users/", methods=["PUT"])
-@token_required
 def update_user(current_user):
     try:
         user = request.json
@@ -159,7 +157,6 @@ def update_user(current_user):
         }), 400
 
 @app.route("/users/", methods=["DELETE"])
-@token_required
 def disable_user(current_user):
     try:
         User().disable_account(current_user["_id"])
@@ -272,7 +269,26 @@ def getStatus():
             "data": None,
             "error": "Bad request"
         }, 400
-    return controller.status(data.get('id'))
+    #return controller.status(data.get('id'))
+    return {
+            "message": "Successfully retrieved information",
+            "data": controller.status(data.get('id'))
+        }, 201
+
+@app.route("/ai/info", methods=["POST"])
+def getInfo():
+    data = request.json
+    if not data:
+        return {
+            "message": "Please provide user details",
+            "data": None,
+            "error": "Bad request"
+        }, 400
+    #return controller.info(data.get('id'))
+    return {
+            "message": "Successfully retrieved information",
+            "data": controller.info(data.get('id'))
+        }, 201
 
 
 if __name__ == "__main__":

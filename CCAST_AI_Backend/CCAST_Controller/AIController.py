@@ -1,6 +1,7 @@
 from AI_System import ai
 from order_middleware import *
 import ccxt.async_support as ccxt
+import time
 
 class AiController:
         
@@ -59,15 +60,25 @@ class AiController:
         else:
             return 'Idle'
 
+    async def info(self, id):
+
+        if id in self.activeMiddleware:
+            return await self.activeMiddleware[id].get_information()
+
+        return
+
 class AIPairs:
 
-    def __init__(self, id, middleware):
+    def __init__(self, id, ai):
         self.id = id
-        self.middleware = middleware
+        self.ai = ai
         print("Created new pair with ID: ", id)
 
+    def get_information(self):        
+        return self.ai.get_information()
+
     def start(self):
-        self.middleware.start()
+        self.ai.start()
 
     def stop(self):
-        self.middleware.stop()
+        self.ai.stop()

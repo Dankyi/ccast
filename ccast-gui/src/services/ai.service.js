@@ -64,6 +64,21 @@ class AiService {
         });
     }
 
+    getMarketBalance(id){
+      console.log("Getting balance for user ", id)
+
+      var userData = {
+        "id": id
+      }
+      
+      return axios
+        .post(API_URL + "info", userData)
+        .then( (response) => {    
+          return response.data;
+        });
+
+    }
+
 }
 
 export default new AiService();
