@@ -63,9 +63,9 @@ class AiController:
     async def info(self, id):
 
         if id in self.activeMiddleware:
-            return await self.activeMiddleware[id].get_information()
+            return self.activeMiddleware[id].get_information()
 
-        return
+        return 0
 
 class AIPairs:
 

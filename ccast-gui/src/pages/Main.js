@@ -39,7 +39,7 @@ export default class Main extends Component {
             this.setState({ trading: 'Live' })
             var returned = aiService.startReal(currentUser.id, currentUser.marketToken, currentUser.marketSecret);
             console.log(returned)
-            this.setState({ startBal: getMarketBalance() })
+            //this.setState({ startBal: getMarketBalance() })
         }
 
         const startFake = (e) => {
@@ -47,7 +47,7 @@ export default class Main extends Component {
             this.setState({ trading: 'Dummy' })
             var returned = aiService.startFake(currentUser.id, currentUser.marketToken, currentUser.marketSecret);
             console.log(returned)
-            this.setState({ startBal: getMarketBalance() })
+            //this.setState({ startBal: getMarketBalance() })
         }
         const stopTrading = (e) => {
             if (this.state.trading == 'Idle') { return }
@@ -97,8 +97,9 @@ export default class Main extends Component {
                     <button className="StopButton" onClick={stopTrading}> Stop Trading</button>
                 </div>
 
+                <h3> The following feature has been removed for this version. </h3>
                 <h3> The starting balance was {startBal}. The current balance is {currentBal}.</h3>
-                <button className='update' onClick={displayMarketBalance}>Update</button>
+                <button className='update' >Update</button>
 
             </div>
         )
