@@ -119,3 +119,4 @@ if __name__ == "__main__":
     print()
 
     print(f"Final Balance: {str(balance)}\nProfit: {str(profit)}")
+    input()  # Stops console window from closing
