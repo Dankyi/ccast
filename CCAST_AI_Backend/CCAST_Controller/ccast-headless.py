@@ -48,6 +48,7 @@ if __name__ == "__main__":
     print()
 
     coin_pair = input("Coin Pair (e.g., ETH/BTC): ")
+    coin_pair = coin_pair.upper()
     buy_grid_percentage = float(input("Lower/Buy Grid Percentage: "))
     sell_grid_percentage = float(input("Sell/Profit Percentage: "))
 
@@ -73,3 +74,48 @@ if __name__ == "__main__":
         print()
         print("Invalid Time Period Given! (M/H/D) == (Minutes/Hours/Days)")
         shutdown()
+
+    INFORMATION = {}
+    AI.start()
+
+    while True:
+
+        INFORMATION = AI.get_information()
+
+        balance = INFORMATION["BALANCE"]
+        current_price = INFORMATION["CURRENT PRICE"]
+        grid_amount = INFORMATION["GRID AMOUNT"]
+        alive = INFORMATION["ALIVE"]
+        profit = INFORMATION["PROFIT"]
+
+        if SECONDS_PASSED % 5 == 0:
+
+            print()
+
+            print(f"Current Balance ({coin_pair}): {str(balance)}\nCurrent Price ({coin_pair}): {str(current_price)}\n"
+                  f"Grid Amount: {str(grid_amount)}\nRunning: {str(alive)}\nProfit: {str(profit)}%\n\n"
+                  f"Time Remaining (Seconds): {str(TIME_IN_SECONDS - SECONDS_PASSED)}")
+
+        pause(1.0)
+        SECONDS_PASSED += 1
+
+        if SECONDS_PASSED == TIME_IN_SECONDS:
+            AI.stop()
+
+        if not alive:
+            break
+        elif alive and balance[0] > 0 and SECONDS_PASSED > TIME_IN_SECONDS:
+            print()
+            print("Selling Remaining Cryptocurrency Before Stopping!")
+            print()
+
+    AI.join()
+
+    INFORMATION = AI.get_information()
+
+    balance = INFORMATION["BALANCE"]
+    profit = INFORMATION["PROFIT"]
+
+    print()
+
+    print(f"Final Balance: {str(balance)}\nProfit: {str(profit)}")
