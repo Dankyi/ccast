@@ -75,6 +75,11 @@ if __name__ == "__main__":
         print("Invalid Time Period Given! (M/H/D) == (Minutes/Hours/Days)")
         shutdown()
 
+    if TIME_IN_SECONDS == 0:
+        print()
+        print("Invalid Time Given! (Must Be At Least 1 MINUTE)")
+        shutdown()
+
     INFORMATION = {}
     AI.start()
 
@@ -96,6 +101,11 @@ if __name__ == "__main__":
                   f"Grid Amount: {str(grid_amount)}\nRunning: {str(alive)}\nProfit: {str(profit)}%\n\n"
                   f"Time Remaining (Seconds): {str(TIME_IN_SECONDS - SECONDS_PASSED)}")
 
+            if alive and balance[0] > 0 and SECONDS_PASSED > TIME_IN_SECONDS:
+                print()
+                print("Selling Remaining Cryptocurrency Before Stopping!")
+                print()
+
         pause(1.0)
         SECONDS_PASSED += 1
 
@@ -104,10 +114,6 @@ if __name__ == "__main__":
 
         if not alive:
             break
-        elif alive and balance[0] > 0 and SECONDS_PASSED > TIME_IN_SECONDS:
-            print()
-            print("Selling Remaining Cryptocurrency Before Stopping!")
-            print()
 
     AI.join()
 
@@ -118,5 +124,5 @@ if __name__ == "__main__":
 
     print()
 
-    print(f"Final Balance: {str(balance)}\nProfit: {str(profit)}")
+    print(f"Final Balance: {str(balance)}\nProfit: {str(profit)}%")
     input()  # Stops console window from closing
