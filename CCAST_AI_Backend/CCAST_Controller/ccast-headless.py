@@ -46,5 +46,30 @@ if __name__ == "__main__":
         shutdown()
 
     print()
-    input()
 
+    coin_pair = input("Coin Pair (e.g., ETH/BTC): ")
+    buy_grid_percentage = float(input("Lower/Buy Grid Percentage: "))
+    sell_grid_percentage = float(input("Sell/Profit Percentage: "))
+
+    AI = ai.AIGridBot(EXCHANGE, DUMMY, coin_pair, buy_grid_percentage, sell_grid_percentage)
+
+    print()
+
+    run_time = input("Run Time (e.g., 16M or 8H or 4D): ")
+
+    time_period = run_time[-1].upper()
+    run_time = int(run_time[:-1])
+
+    TIME_IN_SECONDS = 60
+    SECONDS_PASSED = 0
+
+    if time_period == "M":
+        TIME_IN_SECONDS *= run_time
+    elif time_period == "H":
+        TIME_IN_SECONDS *= 60 * run_time
+    elif time_period == "D":
+        TIME_IN_SECONDS *= 60 * 24 * run_time
+    else:
+        print()
+        print("Invalid Time Period Given! (M/H/D) == (Minutes/Hours/Days)")
+        shutdown()
