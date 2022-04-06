@@ -57,11 +57,9 @@ class AiService {
         "id": id
       }
       
-      return axios
-        .post(API_URL + "status", userData)
-        .then( (response) => {    
-          return response.data;
-        });
+      var status = axios.post(API_URL + "status", userData)
+
+      return status
     }
 
     getMarketBalance(id){

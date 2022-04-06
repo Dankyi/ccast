@@ -8,10 +8,13 @@ export default class Main extends Component {
     constructor(props) {
         super(props);
 
+        
+
         this.state = {
             currentUser: AuthService.getCurrentUser().data,
 
             // Three states for trading: Idle, Dummy, and Live
+            
             trading: 'Idle',
 
             aiInfo: '',
@@ -20,7 +23,18 @@ export default class Main extends Component {
             startBal: 0,
             currentBal: 0
         };
-
+        try{
+            if (this.state.currentUser != null){
+                aiService.getStatus(this.state.currentUser.id)
+                .then(result => 
+                    {
+                        this.setState({ trading: result.data.data })
+                    })
+                
+            }
+        }
+        catch(error){}
+        
     }
 
 
@@ -39,7 +53,7 @@ export default class Main extends Component {
             this.setState({ trading: 'Live' })
             var returned = aiService.startReal(currentUser.id, currentUser.marketToken, currentUser.marketSecret);
             console.log(returned)
-            //this.setState({ startBal: getMarketBalance() })
+            this.setState({ startBal: getMarketBalance() })
         }
 
         const startFake = (e) => {
@@ -47,7 +61,7 @@ export default class Main extends Component {
             this.setState({ trading: 'Dummy' })
             var returned = aiService.startFake(currentUser.id, currentUser.marketToken, currentUser.marketSecret);
             console.log(returned)
-            //this.setState({ startBal: getMarketBalance() })
+            this.setState({ startBal: getMarketBalance() })
         }
         const stopTrading = (e) => {
             if (this.state.trading == 'Idle') { return }
@@ -97,9 +111,8 @@ export default class Main extends Component {
                     <button className="StopButton" onClick={stopTrading}> Stop Trading</button>
                 </div>
 
-                <h3> The following feature has been removed for this version. </h3>
                 <h3> The starting balance was {startBal}. The current balance is {currentBal}.</h3>
-                <button className='update' >Update</button>
+                <button className='update' onClick={displayMarketBalance} >Update</button>
 
             </div>
         )
