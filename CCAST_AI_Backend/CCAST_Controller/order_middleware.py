@@ -70,6 +70,11 @@ class Middleware:
 
                     self.profit_percentage = (1.0 - (self.starting_quote / current_balance[1])) * 100.0
 
+                    with open("PROFIT_LOG.txt", "a+") as profit_log_writer:
+                        #  Write a log of the profit after each sell, each line is a new sell event.
+                        profit_log_writer.write(str(self.profit_percentage))
+                        profit_log_writer.write("\n")
+
         return current_balance
 
     async def process_order(self, exchange, side, coin_pair):
