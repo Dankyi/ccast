@@ -28,6 +28,8 @@ async def load_markets(exchange):
                 ccxt.ExchangeError,
                 ccxt.InvalidNonce):
 
+            print("Exchange Connection Lost - Reconnecting... (Load Markets)")
+
             sleep(1.0)
             # TODO: Log the exception thrown?
             continue
@@ -52,6 +54,8 @@ async def fetch_current_price(exchange, coin_pair):
                 ccxt.ExchangeNotAvailable,
                 ccxt.ExchangeError,
                 ccxt.InvalidNonce):
+
+            print("Exchange Connection Lost - Reconnecting... (Fetch Current Price)")
 
             sleep(1.0)
             #  TODO: Log the exception thrown?
@@ -80,6 +84,8 @@ async def fetch_balance(exchange):
                 ccxt.ExchangeError,
                 ccxt.InvalidNonce):
 
+            print("Exchange Connection Lost - Reconnecting... (Fetch Balance)")
+
             sleep(1.0)
             # TODO: Log the exception thrown?
             continue
@@ -104,6 +110,8 @@ async def create_order(exchange, coin_pair, side, amount):
                 ccxt.ExchangeNotAvailable,
                 ccxt.ExchangeError,
                 ccxt.InvalidNonce):
+
+            print("Exchange Connection Lost - Reconnecting... (Create Order)")
 
             sleep(1.0)
             # TODO: Log the exception thrown?
