@@ -8,33 +8,35 @@ export default class Main extends Component {
     constructor(props) {
         super(props);
 
-        
+
 
         this.state = {
             currentUser: AuthService.getCurrentUser().data,
 
             // Three states for trading: Idle, Dummy, and Live
-            
+
             trading: 'Idle',
 
-            aiInfo: '',
-
             // Values to prove the AI is running
+            alive: False,
             startBal: 0,
-            currentBal: 0
+            currentBal: 0,
+            currentPrice: 0,
+            gridAmount: 0,
+            profit: 0
+
         };
-        try{
-            if (this.state.currentUser != null){
+        try {
+            if (this.state.currentUser != null) {
                 aiService.getStatus(this.state.currentUser.id)
-                .then(result => 
-                    {
+                    .then(result => {
                         this.setState({ trading: result.data.data })
                     })
-                
+
             }
         }
-        catch(error){}
-        
+        catch (error) { }
+
     }
 
 
@@ -42,10 +44,12 @@ export default class Main extends Component {
         const { currentUser } = this.state;
         const { trading } = this.state;
 
-        const { aiInfo } = this.state;
-
+        const { alive } = this.state;
         const { startBal } = this.state;
         const { currentBal } = this.state;
+        const { currentPrice } = this.state;
+        const { gridAmount } = this.state;
+        const { profit } = this.state;
 
 
         const startReal = (e) => {
@@ -53,7 +57,6 @@ export default class Main extends Component {
             this.setState({ trading: 'Live' })
             var returned = aiService.startReal(currentUser.id, currentUser.marketToken, currentUser.marketSecret);
             console.log(returned)
-            this.setState({ startBal: getMarketBalance() })
         }
 
         const startFake = (e) => {
@@ -61,7 +64,6 @@ export default class Main extends Component {
             this.setState({ trading: 'Dummy' })
             var returned = aiService.startFake(currentUser.id, currentUser.marketToken, currentUser.marketSecret);
             console.log(returned)
-            this.setState({ startBal: getMarketBalance() })
         }
         const stopTrading = (e) => {
             if (this.state.trading == 'Idle') { return }
@@ -70,25 +72,25 @@ export default class Main extends Component {
             console.log(returned)
         }
 
-        const getMarketBalance = (e) => {
-            do{
-            aiService.getMarketBalance(currentUser.id).then(
-                result => this.setState({ aiInfo: result })
-            )
-            console.log(this.state.aiInfo)}
-            while (this.state.aiInfo === undefined)
-            
-            try {
-                return this.state.aiInfo.BALANCE;
-            }
-            finally { 
-                return "Undefined" 
-            }
+        const getInfo = async () => {
+            return await aiService.getMarketInfo(currentUser.id)
         }
 
-        const displayMarketBalance = (e) => {
-            this.setState({ currentBal: getMarketBalance() })
+        const displayBalance = async (e) => {
+            //this.setState({ currentBal: getMarketBalance() })
+            
+            await getInfo().then(
+                (response) => {
+                    console.log("Recieved the following: ", response)
+
+                    this.setState({ startBal: response["BALANCE"][0]})
+                    this.setState({ currentBal: response["BALANCE"][1]})
+                }
+            )
+
+            console.log("Start Bal = ", this.state.startBal)            
             console.log("Current Bal = ", this.state.currentBal)
+
         }
 
         if (currentUser == null) return (
@@ -112,7 +114,7 @@ export default class Main extends Component {
                 </div>
 
                 <h3> The starting balance was {startBal}. The current balance is {currentBal}.</h3>
-                <button className='update' onClick={displayMarketBalance} >Update</button>
+                <button className='update' onClick={displayBalance} >Update</button>
 
             </div>
         )
