@@ -10,9 +10,19 @@ again in-case of a thrown error.
 """
 
 
+def __log_exception(function, message):
+
+    with open("Connection_Error_Log.txt", "w+") as connection_error_log_file:
+
+        connection_error_log_file.write("Occurred In: " + str(function))
+        connection_error_log_file.write("\n\n")
+        connection_error_log_file.write("Failure Reason: " + str(message))
+
+
 async def load_markets(exchange):
 
     success = False
+    logged = False
 
     while not success:
 
@@ -26,17 +36,23 @@ async def load_markets(exchange):
                 ccxt.DDoSProtection,
                 ccxt.ExchangeNotAvailable,
                 ccxt.ExchangeError,
-                ccxt.InvalidNonce):
+                ccxt.InvalidNonce) as Error:
+
+            print("\nError in LOAD MARKETS - Retrying...\nReason: " + str(Error))
 
             sleep(1.0)
-            # TODO: Log the exception thrown?
-            continue
+
+            if not logged:
+                __log_exception("Load Markets", Error)
+                logged = False
 
 
 async def fetch_current_price(exchange, coin_pair):
 
     current_price = 0.0
+
     success = False
+    logged = False
 
     while not success:
 
@@ -51,11 +67,15 @@ async def fetch_current_price(exchange, coin_pair):
                 ccxt.DDoSProtection,
                 ccxt.ExchangeNotAvailable,
                 ccxt.ExchangeError,
-                ccxt.InvalidNonce):
+                ccxt.InvalidNonce) as Error:
+
+            print("\nError in FETCH CURRENT PRICE - Retrying...\nReason: " + str(Error))
 
             sleep(1.0)
-            #  TODO: Log the exception thrown?
-            continue
+
+            if not logged:
+                __log_exception("Fetch Current Price", Error)
+                logged = False
 
     return current_price
 
@@ -63,7 +83,9 @@ async def fetch_current_price(exchange, coin_pair):
 async def fetch_balance(exchange):
 
     account_balance = {}
+
     success = False
+    logged = False
 
     while not success:
 
@@ -78,11 +100,15 @@ async def fetch_balance(exchange):
                 ccxt.DDoSProtection,
                 ccxt.ExchangeNotAvailable,
                 ccxt.ExchangeError,
-                ccxt.InvalidNonce):
+                ccxt.InvalidNonce) as Error:
+
+            print("\nError in FETCH BALANCE - Retrying...\nReason: " + str(Error))
 
             sleep(1.0)
-            # TODO: Log the exception thrown?
-            continue
+
+            if not logged:
+                __log_exception("Fetch Balance", Error)
+                logged = False
 
     return account_balance
 
@@ -90,6 +116,7 @@ async def fetch_balance(exchange):
 async def create_order(exchange, coin_pair, side, amount):
 
     success = False
+    logged = False
 
     while not success:
 
@@ -103,8 +130,12 @@ async def create_order(exchange, coin_pair, side, amount):
                 ccxt.DDoSProtection,
                 ccxt.ExchangeNotAvailable,
                 ccxt.ExchangeError,
-                ccxt.InvalidNonce):
+                ccxt.InvalidNonce) as Error:
+
+            print("\nError in CREATE ORDER - Retrying...\nReason: " + str(Error))
 
             sleep(1.0)
-            # TODO: Log the exception thrown?
-            continue
+
+            if not logged:
+                __log_exception("Create Order", Error)
+                logged = False

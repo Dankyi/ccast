@@ -11,9 +11,10 @@ class Middleware:
         self.starting_quote = 0.0
         self.profit_percentage = 0.0
 
+        self.evaluate_quote_div_grids = True
+
         if self.real_money:
 
-            self.first_order = True
             self.grid_amount = grid_amount
             self.quote_div_grids = None  # Will be initialised later!
 
@@ -31,6 +32,12 @@ class Middleware:
 
         fee_dict = exchange.calculate_fee(coin_pair, "market", side, 0, 0)
         return float(fee_dict["rate"])
+
+    @staticmethod
+    def get_min_base_order_amount(exchange, coin_pair):
+
+        min_base_order_amount = exchange.markets[coin_pair]["limits"]["amount"]["min"]
+        return float(min_base_order_amount)
 
     def get_percentage_profit(self):
 
@@ -70,24 +77,45 @@ class Middleware:
 
                     self.profit_percentage = (1.0 - (self.starting_quote / current_balance[1])) * 100.0
 
+                    with open("PROFIT_LOG.txt", "a+") as profit_log_writer:
+                        #  Write a log of the profit after each sell, each line is a new sell event.
+                        profit_log_writer.write(str(self.profit_percentage))
+                        profit_log_writer.write("\n")
+
         return current_balance
 
     async def process_order(self, exchange, side, coin_pair):
 
+        pair_balance = await self.get_balance(exchange, side, coin_pair)  # [BASE/QUOTE] e.g., [0.001, 0.000349]
+
+        if side and self.evaluate_quote_div_grids:
+
+            self.quote_div_grids = pair_balance[1] / self.grid_amount
+            self.evaluate_quote_div_grids = False
+
         if self.real_money:
-
-            pair_balance = await self.get_balance(exchange, side, coin_pair)  # [BASE/QUOTE] e.g., [0.001, 0.000349]
-
-            if self.first_order:
-
-                self.quote_div_grids = pair_balance[1] / self.grid_amount
-                self.first_order = False
 
             if side:  # Buy
 
                 base_quote_price = await ex_middleware.fetch_current_price(exchange, coin_pair)
 
                 amount = self.quote_div_grids / base_quote_price
+
+                if amount < self.get_min_base_order_amount(exchange, coin_pair):
+
+                    quote_to_base = pair_balance[1] / base_quote_price
+
+                    if quote_to_base > self.get_min_base_order_amount(exchange, coin_pair):
+                        # This covers slippage - if the user has more quote money in their account than the minimum
+                        # amount to order, then it means slippage caused the price to change mid-calculation, so it's
+                        # safe to simply set the amount to the minimum order amount and continue.
+                        amount = self.get_min_base_order_amount(exchange, coin_pair)
+                        self.evaluate_quote_div_grids = True
+                    else:
+                        # This means that the user simply does not have enough quote money in their account to buy the
+                        # minimum amount of base currency, so just return instead of buying.
+                        return
+
                 await ex_middleware.create_order(exchange, coin_pair, "buy", amount)
 
                 #  Amount of BASE currency to buy. E.g., if you are trading ETH/BTC, and want to buy 0.1 BTC of ETH,
@@ -97,6 +125,7 @@ class Middleware:
             else:  # Sell
 
                 await ex_middleware.create_order(exchange, coin_pair, "sell", pair_balance[0])
+                self.evaluate_quote_div_grids = True
 
                 #  Amount of BASE currency to sell. Since we want to sell all of the BASE currency at once, we only
                 #  need to feed it the latest current balance. E.g., if you have ETH/BTC as [5.63, 0.031] then you want
@@ -111,6 +140,21 @@ class Middleware:
                 base_quote_price = await ex_middleware.fetch_current_price(exchange, coin_pair)
 
                 amount = self.quote_div_grids / base_quote_price
+
+                if amount < self.get_min_base_order_amount(exchange, coin_pair):
+
+                    quote_to_base = pair_balance[1] / base_quote_price
+
+                    if quote_to_base > self.get_min_base_order_amount(exchange, coin_pair):
+                        # This covers slippage - if the user has more quote money in their account than the minimum
+                        # amount to order, then it means slippage caused the price to change mid-calculation, so it's
+                        # safe to simply set the amount to the minimum order amount and continue.
+                        amount = self.get_min_base_order_amount(exchange, coin_pair)
+                        self.evaluate_quote_div_grids = True
+                    else:
+                        # This means that the user simply does not have enough quote money in their account to buy the
+                        # minimum amount of base currency, so just return instead of buying.
+                        return
 
                 self.base += amount
 
@@ -130,3 +174,5 @@ class Middleware:
 
                 self.quote += quote_amount
                 self.base = 0.0
+
+                self.evaluate_quote_div_grids = True
