@@ -11,18 +11,14 @@ class Middleware:
         self.starting_quote = 0.0
         self.profit_percentage = 0.0
 
+        self.grid_amount = grid_amount
+        self.quote_div_grids = 0.0
         self.evaluate_quote_div_grids = True
 
-        if self.real_money:
-
-            self.grid_amount = grid_amount
-            self.quote_div_grids = None  # Will be initialised later!
-
-        else:
+        if not self.real_money:
 
             self.base = 0.0
             self.quote = 1.0
-            self.quote_div_grids = self.quote / grid_amount
 
     def get_type(self):
         return self.real_money
