@@ -50,7 +50,7 @@ const handleSubmit = (e) => {
     // If the login is successful:
     AuthService.login(email, password).then(
       () => {
-        navigate("/ccast/profile");
+        navigate("/ccast/");
         window.location.reload(false);
         
       },

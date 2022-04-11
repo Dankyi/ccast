@@ -26,6 +26,7 @@ SECRET_KEY = "saZfoJSQGAXeixoIt3MJFz4Tu5FaLi24"
 app.config['SECRET_KEY'] = SECRET_KEY
 controller = AiController()
 
+
 @app.after_request
 def after_request(response):
     response.headers.add('Access-Control-Allow-Origin', '*')
@@ -312,12 +313,19 @@ def getStatus():
 def getInfo():
 
     data = request.json
-    info = controller.status(data.get('id'))
+    info = controller.info(data.get('id'))
 
-    return {
-                "message": "Successfully retrieved information",
-                "data": info
-            }, 201
+    if info != "No Data Retrieved":
+        return {
+            "message": "Successfully retrieved information",
+            "data": info
+        }, 201
+        
+    else:
+        return {
+            "message": "An error occured while retrieving information.",
+            "data": info
+        }, 500
 
 
 if __name__ == "__main__":

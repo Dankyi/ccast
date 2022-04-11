@@ -18,7 +18,7 @@ export default class Main extends Component {
             trading: 'Idle',
 
             // Values to prove the AI is running
-            alive: False,
+            alive: false,
             startBal: 0,
             currentBal: 0,
             currentPrice: 0,

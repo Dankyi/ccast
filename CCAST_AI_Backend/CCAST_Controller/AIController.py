@@ -60,12 +60,12 @@ class AiController:
         else:
             return 'Idle'
 
-    async def info(self, id):
+    def info(self, id):
 
         if id in self.activeMiddleware:
             return self.activeMiddleware[id].get_information()
 
-        return 0
+        return "No Data Retrieved"
 
 class AIPairs:
 
