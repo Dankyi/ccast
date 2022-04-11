@@ -72,6 +72,7 @@ class AIGridBot(Thread):
         """
 
         return {"BALANCE": self.balance,
+                "Dummy": self.dummy,
                 "GRID AMOUNT": self.grid_amount,
                 "CURRENT PRICE": self.coin_pair_price,
                 "ALIVE": self.is_alive(),

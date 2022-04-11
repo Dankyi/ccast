@@ -52,20 +52,20 @@ class AiController:
         if id in self.activeMiddleware:  
 
             ai = self.activeMiddleware[id]
-            live = ai.get_type()
-            if (live):
-                return 'Live'
-            else:
+            dummy = ai.get_type()
+            if (dummy):
                 return 'Dummy'
+            else:
+                return 'Live'
         else:
             return 'Idle'
 
-    async def info(self, id):
+    def info(self, id):
 
         if id in self.activeMiddleware:
             return self.activeMiddleware[id].get_information()
 
-        return 0
+        return "No Data Retrieved"
 
 class AIPairs:
 
@@ -73,6 +73,10 @@ class AIPairs:
         self.id = id
         self.ai = ai
         print("Created new pair with ID: ", id)
+
+    def get_type(self):        
+        dummy = self.ai.get_information()["Dummy"]
+        return dummy
 
     def get_information(self):        
         return self.ai.get_information()

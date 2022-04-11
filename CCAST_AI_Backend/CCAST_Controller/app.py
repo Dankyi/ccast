@@ -15,7 +15,7 @@ load_dotenv()
 # Cors
 
 config = {
-  'ORIGINS': ['*']
+    'ORIGINS': ['*']
 }
 
 
@@ -27,21 +27,24 @@ app.config['SECRET_KEY'] = SECRET_KEY
 controller = AiController()
 
 
-
 @app.after_request
 def after_request(response):
     response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    response.headers.add('Access-Control-Allow-Headers',
+                         'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods',
+                         'GET,PUT,POST,DELETE,OPTIONS')
     response.headers.add('Access-Control-Allow-Credentials', 'true')
     return response
+
 
 @app.route("/")
 def hello():
     return "Hello World!"
 
-#-------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------
 # Authentication
+
 
 @app.route("/users/", methods=["POST"])
 def add_user():
@@ -74,6 +77,7 @@ def add_user():
             "data": None
         }, 500
 
+
 @app.route("/users/login", methods=["POST"])
 def login():
     try:
@@ -85,7 +89,8 @@ def login():
                 "error": "Bad request"
             }, 400
         # validate input
-        is_validated = validate_email_and_password(data.get('email'), data.get('password'))
+        is_validated = validate_email_and_password(
+            data.get('email'), data.get('password'))
         if is_validated is not True:
             return dict(message='Invalid username or password', data=None, error=is_validated), 400
         user = User().login(
@@ -121,9 +126,9 @@ def login():
         }, 404
     except Exception as e:
         return {
-                "message": "Something went wrong!",
-                "error": str(e),
-                "data": None
+            "message": "Something went wrong!",
+            "error": str(e),
+            "data": None
         }, 500
 
 
@@ -133,6 +138,7 @@ def get_current_user(current_user):
         "message": "successfully retrieved user profile",
         "data": current_user
     })
+
 
 @app.route("/users/", methods=["PUT"])
 def update_user(current_user):
@@ -155,6 +161,7 @@ def update_user(current_user):
             "error": str(e),
             "data": None
         }), 400
+
 
 @app.route("/users/", methods=["DELETE"])
 def disable_user(current_user):
@@ -180,6 +187,7 @@ def forbidden(e):
         "data": None
     }), 403
 
+
 @app.errorhandler(404)
 def forbidden(e):
     return jsonify({
@@ -187,6 +195,7 @@ def forbidden(e):
         "error": str(e),
         "data": None
     }), 404
+
 
 @app.route("/users/token", methods=["POST"])
 def setMarketToken():
@@ -197,14 +206,14 @@ def setMarketToken():
                 "message": "Please provide market details",
                 "data": None,
                 "error": "Bad request"
-            }, 400        
+            }, 400
         print(data)
 
         success = User().setMarketDetails(
             data["email"],
             data["token"],
             data["secret"]
-            )
+        )
         if not success:
             return {
                 "message": "Something went wrong",
@@ -212,7 +221,7 @@ def setMarketToken():
                 "data": None
             }, 500
         return {
-            "message": "Successfully stored market details"            
+            "message": "Successfully stored market details"
         }, 201
     except Exception as e:
         return {
@@ -221,8 +230,9 @@ def setMarketToken():
             "data": None
         }, 500
 
-#-------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------
 # AI controls
+
 
 @app.route("/ai/startReal", methods=["POST"])
 def startAIReal():
@@ -233,8 +243,10 @@ def startAIReal():
             "data": None,
             "error": "Bad request"
         }, 400
-    controller.add_Pair(data.get('id'), 0, data.get('marketToken'), data.get('marketSecret'), "ETH/BTC")
+    controller.add_Pair(data.get('id'), 0, data.get(
+        'marketToken'), data.get('marketSecret'), "ETH/BTC")
     return "Started Real Successfully"
+
 
 @app.route("/ai/startFake", methods=["POST"])
 def startAIFake():
@@ -245,8 +257,10 @@ def startAIFake():
             "data": None,
             "error": "Bad request"
         }, 400
-    controller.add_Pair(data.get('id'), 1, data.get('marketToken'), data.get('marketSecret'), "ETH/BTC")
+    controller.add_Pair(data.get('id'), 1, data.get(
+        'marketToken'), data.get('marketSecret'), "ETH/BTC")
     return "Started Dummy Successfully"
+
 
 @app.route("/ai/stop", methods=["POST"])
 def stopAI():
@@ -260,35 +274,58 @@ def stopAI():
     controller.remove_Pair(data.get('id'))
     return "Stopped Successfully"
 
+
 @app.route("/ai/status", methods=["POST"])
 def getStatus():
-    data = request.json
-    if not data:
+    try:
+        data = request.json
+        if not data:
+            return {
+                "message": "Please provide user details",
+                "data": None,
+                "error": "Bad request"
+            }, 400
+    # return controller.status(data.get('id'))
+
+        status = controller.status(data.get('id'))
+
+        if status == 'Live' or status == 'Dummy' or status == 'Idle':
+
+            return {
+                "message": "Successfully retrieved information",
+                "data": status
+            }, 201
+
         return {
-            "message": "Please provide user details",
-            "data": None,
-            "error": "Bad request"
-        }, 400
-    #return controller.status(data.get('id'))
-    return {
-            "message": "Successfully retrieved information",
-            "data": controller.status(data.get('id'))
-        }, 201
+            "message": "An Internal Error has occured",
+            "error": str(e),
+            "data": None
+        }, 500
+    except Exception as e:
+        return {
+            "message": "An Internal Error has occured",
+            "error": str(e),
+            "data": None
+        }, 500
+
 
 @app.route("/ai/info", methods=["POST"])
 def getInfo():
+
     data = request.json
-    if not data:
+    info = controller.info(data.get('id'))
+
+    if info != "No Data Retrieved":
         return {
-            "message": "Please provide user details",
-            "data": None,
-            "error": "Bad request"
-        }, 400
-    #return controller.info(data.get('id'))
-    return {
             "message": "Successfully retrieved information",
-            "data": controller.info(data.get('id'))
+            "data": info
         }, 201
+        
+    else:
+        return {
+            "message": "An error occured while retrieving information.",
+            "data": info
+        }, 500
 
 
 if __name__ == "__main__":
