@@ -1,5 +1,6 @@
 import ccxt.async_support as ccxt
 from time import sleep
+from sys import exit as force_kill_ai
 
 
 """
@@ -19,7 +20,7 @@ def __log_exception(function, message):
         connection_error_log_file.write("Failure Reason: " + str(message))
 
 
-async def load_markets(exchange):
+async def load_markets(exchange, stop_signal):
 
     success = False
     logged = False
@@ -46,8 +47,11 @@ async def load_markets(exchange):
                 __log_exception("Load Markets", Error)
                 logged = False
 
+            if stop_signal.is_set():
+                force_kill_ai()
 
-async def fetch_current_price(exchange, coin_pair):
+
+async def fetch_current_price(exchange, coin_pair, stop_signal):
 
     current_price = 0.0
 
@@ -77,10 +81,13 @@ async def fetch_current_price(exchange, coin_pair):
                 __log_exception("Fetch Current Price", Error)
                 logged = False
 
+            if stop_signal.is_set():
+                force_kill_ai()
+
     return current_price
 
 
-async def fetch_balance(exchange):
+async def fetch_balance(exchange, stop_signal):
 
     account_balance = {}
 
@@ -110,10 +117,13 @@ async def fetch_balance(exchange):
                 __log_exception("Fetch Balance", Error)
                 logged = False
 
+            if stop_signal.is_set():
+                force_kill_ai()
+
     return account_balance
 
 
-async def create_order(exchange, coin_pair, side, amount):
+async def create_order(exchange, coin_pair, side, amount, stop_signal):
 
     success = False
     logged = False
@@ -139,3 +149,6 @@ async def create_order(exchange, coin_pair, side, amount):
             if not logged:
                 __log_exception("Create Order", Error)
                 logged = False
+
+            if stop_signal.is_set():
+                force_kill_ai()

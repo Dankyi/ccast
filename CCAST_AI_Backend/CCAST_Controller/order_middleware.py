@@ -43,7 +43,7 @@ class Middleware:
 
         return self.profit_percentage
 
-    async def get_balance(self, exchange, side, coin_pair):
+    async def get_balance(self, exchange, side, coin_pair, stop_signal):
 
         current_balance = [0.0, 0.0]
 
@@ -51,7 +51,7 @@ class Middleware:
 
             coin_pair_split = coin_pair.split("/")
 
-            account_balance = await ex_middleware.fetch_balance(exchange)
+            account_balance = await ex_middleware.fetch_balance(exchange, stop_signal)
 
             if coin_pair_split[0] in account_balance:  # Base
                 current_balance[0] = float(account_balance[coin_pair_split[0]])
@@ -84,9 +84,10 @@ class Middleware:
 
         return current_balance
 
-    async def process_order(self, exchange, side, coin_pair):
+    async def process_order(self, exchange, side, coin_pair, stop_signal):
 
-        pair_balance = await self.get_balance(exchange, side, coin_pair)  # [BASE/QUOTE] e.g., [0.001, 0.000349]
+        pair_balance = await self.get_balance(exchange, side, coin_pair, stop_signal)
+        # pair_balance = [BASE/QUOTE] e.g., [0.001, 0.000349]
 
         if side and self.evaluate_quote_div_grids:
 
@@ -97,7 +98,7 @@ class Middleware:
 
             if side:  # Buy
 
-                base_quote_price = await ex_middleware.fetch_current_price(exchange, coin_pair)
+                base_quote_price = await ex_middleware.fetch_current_price(exchange, coin_pair, stop_signal)
 
                 amount = self.quote_div_grids / base_quote_price
 
@@ -116,7 +117,7 @@ class Middleware:
                         # minimum amount of base currency, so just return instead of buying.
                         return
 
-                await ex_middleware.create_order(exchange, coin_pair, "buy", amount)
+                await ex_middleware.create_order(exchange, coin_pair, "buy", amount, stop_signal)
 
                 #  Amount of BASE currency to buy. E.g., if you are trading ETH/BTC, and want to buy 0.1 BTC of ETH,
                 #  you need to do 0.1 / Price, so if ETH/BTC is currently trading at 0.07, then 0.1 BTC is worth
@@ -124,7 +125,7 @@ class Middleware:
 
             else:  # Sell
 
-                await ex_middleware.create_order(exchange, coin_pair, "sell", pair_balance[0])
+                await ex_middleware.create_order(exchange, coin_pair, "sell", pair_balance[0], stop_signal)
                 self.evaluate_quote_div_grids = True
 
                 #  Amount of BASE currency to sell. Since we want to sell all of the BASE currency at once, we only
@@ -137,7 +138,7 @@ class Middleware:
 
                 self.quote -= self.quote_div_grids
 
-                base_quote_price = await ex_middleware.fetch_current_price(exchange, coin_pair)
+                base_quote_price = await ex_middleware.fetch_current_price(exchange, coin_pair, stop_signal)
 
                 amount = self.quote_div_grids / base_quote_price
 
@@ -165,10 +166,10 @@ class Middleware:
                 base_dollar_pair = coin_pair_split[0] + "/" + "USDT"
                 quote_dollar_pair = coin_pair_split[1] + "/" + "USDT"
 
-                base_dollars = await ex_middleware.fetch_current_price(exchange, base_dollar_pair)
+                base_dollars = await ex_middleware.fetch_current_price(exchange, base_dollar_pair, stop_signal)
                 base_dollars *= self.base
 
-                quote_dollars = await ex_middleware.fetch_current_price(exchange, quote_dollar_pair)
+                quote_dollars = await ex_middleware.fetch_current_price(exchange, quote_dollar_pair, stop_signal)
 
                 quote_amount = base_dollars / quote_dollars
 
