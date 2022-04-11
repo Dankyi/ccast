@@ -94,7 +94,7 @@ class AIGridBot(Thread):
 
         """
 
-        min_base_order_amount = float(self.exchange.markets[self.coin_pair]["limits"]["amount"]["min"])
+        min_base_order_amount = self.order_middleware.get_min_base_order_amount(self.exchange, self.coin_pair)
 
         buy_fee = self.order_middleware.get_fee(self.exchange, self.coin_pair, "buy")
 

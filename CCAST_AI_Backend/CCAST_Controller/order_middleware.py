@@ -32,6 +32,12 @@ class Middleware:
         fee_dict = exchange.calculate_fee(coin_pair, "market", side, 0, 0)
         return float(fee_dict["rate"])
 
+    @staticmethod
+    def get_min_base_order_amount(exchange, coin_pair):
+
+        min_base_order_amount = exchange.markets[coin_pair]["limits"]["amount"]["min"]
+        return float(min_base_order_amount)
+
     def get_percentage_profit(self):
 
         return self.profit_percentage
