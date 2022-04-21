@@ -76,19 +76,23 @@ export default class Main extends Component {
             return await aiService.getMarketInfo(currentUser.id)
         }
 
-        const displayBalance = async (e) => {
+        const displayInfo = async (e) => {
             //this.setState({ currentBal: getMarketBalance() })
-            
+
             await getInfo().then(
                 (response) => {
                     console.log("Recieved the following: ", response)
 
-                    this.setState({ startBal: response["BALANCE"][0]})
-                    this.setState({ currentBal: response["BALANCE"][1]})
+                    this.setState({ alive: response["ALIVE"] })
+                    this.setState({ startBal: response["BALANCE"][0] })
+                    this.setState({ currentBal: response["BALANCE"][1] })
+                    this.setState({ currentPrice: response["CURRENT PRICE"] })
+                    this.setState({ gridAmount: response["GRID AMOUNT"] })
+                    this.setState({ profit: response["PROFIT"] })
                 }
             )
 
-            console.log("Start Bal = ", this.state.startBal)            
+            console.log("Start Bal = ", this.state.startBal)
             console.log("Current Bal = ", this.state.currentBal)
 
         }
@@ -113,8 +117,16 @@ export default class Main extends Component {
                     <button className="StopButton" onClick={stopTrading}> Stop Trading</button>
                 </div>
 
-                <h3> The starting balance was {startBal}. The current balance is {currentBal}.</h3>
-                <button className='update' onClick={displayBalance} >Update</button>
+                {
+                    trading == 'Idle' ?
+                        <h3> Start trading to see a balance.</h3>
+                        :
+                        <>
+                            <h3> The starting balance was {startBal}. The current balance is {currentBal}.</h3>
+                            <button className='update' onClick={displayInfo} >Update</button>
+                        </>
+                }
+
 
             </div>
         )

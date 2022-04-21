@@ -111,8 +111,6 @@ def login():
                         "id": user.id,
                         "name": user.name,
                         "email": user.email,
-                        "marketToken": user.marketToken,
-                        "marketSecret": user.marketSecret,
                         "accessToken": user.token
                     }
                 }
@@ -245,10 +243,8 @@ def startAIReal():
             "data": None,
             "error": "Bad request"
         }, 400
-    # controller.add_Pair(data.get('id'), 0, data.get(
-    #    'token'), data.get('secret'), "ETH/BTC")
-    controller.add_Pair(data.get('id'), data.get('token'), data.get('secret'))
-
+    controller.add_Pair(data.get('id'), 0, data.get(
+        'marketToken'), data.get('marketSecret'), "ETH/BTC")
     return "Started Real Successfully"
 
 
@@ -301,9 +297,10 @@ def getStatus():
             }, 201
 
         return {
-            "message": "An Internal Error has occured",            
-            "data": status
-        }, 400
+            "message": "An Internal Error has occured",
+            "error": str(e),
+            "data": None
+        }, 500
     except Exception as e:
         return {
             "message": "An Internal Error has occured",
@@ -315,27 +312,19 @@ def getStatus():
 @app.route("/ai/info", methods=["POST"])
 def getInfo():
 
-    try:
-        data = request.json      
-        info = controller.info(data.get('id'))
+    data = request.json
+    info = controller.info(data.get('id'))
 
-        if info != "No Data Retrieved":
-            return {
-                "message": "Successfully retrieved information",
-                "data": info
-            }, 201
-
-        else:
-            return {
-                "message": "An error occured while retrieving information.",
-                "data": info
-            }, 400
-
-    except Exception as e:
+    if info != "No Data Retrieved":
         return {
-            "message": "An Internal Error has occured",
-            "error": str(e),
-            "data": None
+            "message": "Successfully retrieved information",
+            "data": info
+        }, 201
+        
+    else:
+        return {
+            "message": "An error occured while retrieving information.",
+            "data": info
         }, 500
 
 

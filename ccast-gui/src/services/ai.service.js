@@ -15,6 +15,7 @@ class AiService {
       "secret": marketSecret
     }
 
+
     return axios
       .post(API_URL + "startReal", userData)
       .then((response) => {
@@ -65,21 +66,18 @@ class AiService {
   }
 
   getMarketInfo(id) {
-    console.log("Getting balance for user ", id)
+    console.log("Getting info for user ", id)
 
     var userData = {
       "id": id
     }
 
     return axios
-      .post(API_URL + "info", userData)
+      .post(API_URL + "info", {"id": id})
       .then( (response) => {
 
         response = response.data.data
-
-      console.log("Recieved the following from the API:")
-      console.log(response)
-
+        
       return response
     });
   }

@@ -48,7 +48,6 @@ class User:
         if not result:
             return
         
-
         self.id = result[0]
         self.name = result[1]
         self.email = result[2]
