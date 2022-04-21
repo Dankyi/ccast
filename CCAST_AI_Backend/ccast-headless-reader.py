@@ -14,8 +14,11 @@ if __name__ == "__main__":
     filename = cwd + "\config.ini"
 
     if not os.path.exists(filename):
-        print("File not found: ", filename)
-        quit()
+        filename = cwd + "/config.ini" # Try using / instead of \
+
+        if not os.path.exists(filename):
+            print("File not found: ", filename)
+            quit()
 
     config = configparser.ConfigParser()
     config.read(filename)

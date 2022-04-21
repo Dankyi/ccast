@@ -127,6 +127,11 @@ class AIGridBot(Thread):
 
         """
 
+        print("Values provided to the AI:")
+        print("Exchange: ", self.exchange)
+        print("Key: ", self.exchange.apiKey)
+        print("Sec: ", self.exchange.secret)
+
         await ex_middleware.load_markets(self.exchange, self.stop_signal)
 
         await self.__get_balance(None)  # Update the balance before beginning

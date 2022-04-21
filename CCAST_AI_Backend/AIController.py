@@ -1,6 +1,8 @@
+import os
 from AI_System import ai
 from order_middleware import *
 import ccxt.async_support as ccxt
+import configparser
 import time
 
 class AiController:
@@ -27,10 +29,48 @@ class AiController:
         EXCHANGE = ccxt.ftx({"verbose": False, "enableRateLimit": True, "apiKey": key, "secret": secret})
         AI = ai.AIGridBot(EXCHANGE, dummy, coin, lower_percentage, profit_percentage)  # Dummy  True = Fake, False = Real
         return AI
+
+    def makeAIInstance(self, key, secret):
+
+        cwd = os.getcwd()
+        filename = cwd + "\config.ini"
+
+        if not os.path.exists(filename):
+            filename = cwd + "/config.ini" # Try using / instead of \
+
+            if not os.path.exists(filename):
+                print("File not found: ", filename)
+                quit()
+        
+
+        config = configparser.ConfigParser()
+        config.read(filename)
+
+        public_key = key
+        private_key = secret
+        DUMMY = bool(config['instance_info']['DUMMY'])
+
+        EXCHANGE = ccxt.ftx({"verbose": False, "enableRateLimit": True, "apiKey": public_key, "secret": private_key})
+
+        coin_pair = config['instance_info']['coin_pair']
+        buy_grid_percentage = float(config['instance_info']['buy_grid_percentage'])
+        sell_grid_percentage = float(config['instance_info']['sell_grid_percentage'])
+
+        AI = ai.AIGridBot(EXCHANGE, DUMMY, coin_pair, buy_grid_percentage, sell_grid_percentage)
+        return AI
+        
         
     def add_Pair(self, id, dummy, key, secret, coin):
         
         self.activeMiddleware[id] = AIPairs(id, self.makeAIInstance(dummy, key, secret, coin))       
+        print("Current number of Instances: ", len(self.activeMiddleware))
+        self.activeMiddleware[id].start()
+        print("Started AI")
+        return
+
+    def add_Pair(self, id, key, secret):
+        
+        self.activeMiddleware[id] = AIPairs(id, self.makeAIInstance(key, secret))       
         print("Current number of Instances: ", len(self.activeMiddleware))
         self.activeMiddleware[id].start()
         print("Started AI")

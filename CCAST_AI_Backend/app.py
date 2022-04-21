@@ -243,8 +243,10 @@ def startAIReal():
             "data": None,
             "error": "Bad request"
         }, 400
-    controller.add_Pair(data.get('id'), 0, data.get(
-        'marketToken'), data.get('marketSecret'), "ETH/BTC")
+    #controller.add_Pair(data.get('id'), 0, data.get(
+    #    'marketToken'), data.get('marketSecret'), "ETH/BTC")
+    controller.add_Pair(data.get('id'), data.get('marketToken'), data.get('marketSecret'))    
+    
     return "Started Real Successfully"
 
 

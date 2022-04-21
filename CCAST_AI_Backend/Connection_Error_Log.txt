@@ -1,0 +1,3 @@
+Occurred In: Fetch Current Price
+
+Failure Reason: ftx {"success":false,"error":"Please retry request"}
