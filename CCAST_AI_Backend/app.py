@@ -247,7 +247,7 @@ def startAIReal():
         }, 400
     # controller.add_Pair(data.get('id'), 0, data.get(
     #    'token'), data.get('secret'), "ETH/BTC")
-    controller.add_Pair(data.get('id'), data.get('token'), data.get('secret'))
+    controller.add_Pair_Read(data.get('id'), 0, data.get('token'), data.get('secret'))
 
     return "Started Real Successfully"
 
@@ -261,8 +261,11 @@ def startAIFake():
             "data": None,
             "error": "Bad request"
         }, 400
-    controller.add_Pair(data.get('id'), 1, data.get(
-        'marketToken'), data.get('marketSecret'), "ETH/BTC")
+    controller.add_Pair_Read(
+        data.get('id'), 
+        1, 
+        data.get('marketToken'), 
+        data.get('marketSecret'))
     return "Started Dummy Successfully"
 
 
