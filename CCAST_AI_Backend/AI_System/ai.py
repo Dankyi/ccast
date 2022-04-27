@@ -73,10 +73,12 @@ class AIGridBot(Thread):
 
         return {"BALANCE": self.balance,
                 "Dummy": self.dummy,
+                "Coin Pair": self.coin_pair,
                 "GRID AMOUNT": self.grid_amount,
                 "CURRENT PRICE": self.coin_pair_price,
                 "ALIVE": self.is_alive(),
-                "PROFIT": self.order_middleware.get_percentage_profit()}
+                "PROFIT": self.order_middleware.get_percentage_profit()
+                }
 
     async def __init_grid_amount_and_middleware(self):
 

@@ -19,8 +19,10 @@ export default class Main extends Component {
 
             // Values to prove the AI is running
             alive: false,
-            startBal: 0,
-            currentBal: 0,
+            coin0: "Coin 1",
+            coin1: "Coin 2",
+            coin0Bal: 0,
+            coin1Bal: 0,
             currentPrice: 0,
             gridAmount: 0,
             profit: 0
@@ -45,8 +47,13 @@ export default class Main extends Component {
         const { trading } = this.state;
 
         const { alive } = this.state;
-        const { startBal } = this.state;
-        const { currentBal } = this.state;
+
+        
+        const { coin0 } = this.state; // Store the coin symbols.
+        const { coin1 } = this.state;
+        const { coin0Bal } = this.state; // Store the coin quantities.
+        const { coin1Bal } = this.state;
+
         const { currentPrice } = this.state;
         const { gridAmount } = this.state;
         const { profit } = this.state;
@@ -83,12 +90,25 @@ export default class Main extends Component {
                 (response) => {
                     console.log("Recieved the following: ", response)
 
-                    this.setState({ alive: response["ALIVE"] })
-                    this.setState({ startBal: response["BALANCE"][0] })
-                    this.setState({ currentBal: response["BALANCE"][1] })
+                    this.setState({ alive: response["ALIVE"] })                    
+                    this.setState({ coin0Bal: response["BALANCE"][0] })
+                    this.setState({ coin1Bal: response["BALANCE"][1] })
                     this.setState({ currentPrice: response["CURRENT PRICE"] })
                     this.setState({ gridAmount: response["GRID AMOUNT"] })
                     this.setState({ profit: response["PROFIT"] })
+
+                    try{
+                    var pair = response["Coin Pair"]
+                    var split = pair.split("/")
+                    
+                    this.setState({ coin0: split[0] })
+                    this.setState({ coin1: split[1] })
+
+                    }
+                    catch (error){
+                        this.setState({ coin0: "Coin 1" })
+                        this.setState({ coin1: "Coin 2" })
+                    }
                 }
             )
 
@@ -122,7 +142,8 @@ export default class Main extends Component {
                         <h3> Start trading to see a balance.</h3>
                         :
                         <>
-                            <h3> The starting balance was {startBal}. The current balance is {currentBal}.</h3>
+                            <h3> Your current balance of {coin0} is {coin0Bal}. </h3>
+                            <h3> Your current balance of {coin1} is {coin1Bal}. </h3>
                             <button className='update' onClick={displayInfo} >Update</button>
                         </>
                 }
