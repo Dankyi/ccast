@@ -82,7 +82,7 @@ class Middleware:
 
     async def process_order(self, exchange, side, coin_pair, stop_signal):
 
-        pair_balance = await self.get_balance(exchange, side, coin_pair, stop_signal)
+        pair_balance = await self.get_balance(exchange, None, coin_pair, stop_signal)
         # pair_balance = [BASE/QUOTE] e.g., [0.001, 0.000349]
 
         if side and self.evaluate_quote_div_grids:
