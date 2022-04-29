@@ -1,5 +1,14 @@
 # ccast
 
+Pre-requisites:
+    Node JS
+    NPM - Node Package Manager
+    Yarn
+    Python - Ideally Python 3.9.9
+    Means to create a Python Virtual Environment
+   
+
+
 To create a working development environment, Node Package Manager (NPM) and Yarn are required.
     Yarn can be installed after NPM with the command *npm install --global yarn*
 
